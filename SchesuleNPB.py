@@ -25,10 +25,19 @@ class NPB(Base):
         self.Teams["p"] = [x for x in range(6)]
         self.Teams["s"] = [x for x in range(6,12)]
 
-        self.W["r"] = [w for w in range(21)]
+        self.W['r'] = [w for w in range(21)]
+        self.W["r_pre"] = [w for w in range(5)]
+        self.W["r_post"] = [w for w in range(16)]
         self.W["i"] = [0,1,2]
         self.total_game['r'] = 42
+        self.total_game['r_pre'] = 10
+        self.total_game['r_post'] = 32
         self.total_game['i'] = 6
+        self.lb["r_pre"] = 1
+        self.ub["r_pre"] = 1
+        self.lb["r_post"] = 3
+        self.ub["r_post"] = 4
+
         self.D = [[0]*12 for _ in range(12)]
     
     def EuclidDistance(self, coord1, coord2):
@@ -41,16 +50,29 @@ class NPB(Base):
             for j in K:
                 self.D[i][j] = self.EuclidDistance(self.coordinates[i],self.coordinates[j])
 
+    def Merge(self, list1, list2):
+        if len(list1) != len(list2):
+            print("Can't merge these!")
+            return 
+        return_list = [0]*len(list1)
+        for i in range(len(list1)):
+            return_list[i] = max(list1[i],list2[i])
+        
+        return return_list
 
 class Solve(NPB):
     def __init__(self):
         super().__init__()
 
-    def RegularGame(self, league, num_of_process=1,option=[]):
+    def RegularGame(self, league, type, initial_position=None, num_of_process=1, option=[], time_limit=3600):
+
+        if type not in ['r_pre','r_post']:
+            print('key error')
+            return 
         self.DistMatrix()# calc dist mat
         # set local variables
         I = self.Teams[league]
-        W = self.W["r"]
+        W = self.W[type]
         D = self.D
 
         # declare problem type
@@ -61,30 +83,57 @@ class Solve(NPB):
         v = pulp.LpVariable.dicts('visitor', ([0,1],I,I,W),0,1,'Integer')
         home = pulp.LpVariable.dicts('new_home', ([0,1],I,I,W),0,1,'Integer')
         vis = pulp.LpVariable.dicts('new_vis', ([0,1],I,I,I,W),0,1,'Integer')
+        
         # set objective function
-        problem += pulp.lpSum([D[_from][to]*(home[day][_from][to][w]+vis[day][team][_from][to][w])for _from in I for to in I for w in W for day in [0,1]for team in I])
+        obj = [D[_from][to]*home[day][_from][to][w]for _from in I for to in I for w in W for day in [0,1]]
+        obj += [D[_from][to]*vis[day][team][_from][to][w]for _from in I for to in I for w in W for day in [0,1]for team in I]
+        if initial_position:
+            obj += [D[initial_position[team]][team]*pulp.lpSum([h[0][team][j][0]for j in I])for team in I for to in I]
+            obj += [D[initial_position[team]][to]*v[0][team][to][0]for team in I for to in I]
+        obj = pulp.lpSum(obj)
+        problem += obj
         
         # set constraints
         for i in I:
             # 総試合数に関する制約
-            problem += pulp.lpSum([h[0][i][j][w]+v[0][i][j][w]+h[1][i][j][w]+v[1][i][j][w] for j in I for w in W]) == self.total_game["r"]
+            problem += pulp.lpSum([h[0][i][j][w]+v[0][i][j][w]+h[1][i][j][w]+v[1][i][j][w] for j in I for w in W]) == self.total_game[type]
             for w in W:
                 # 1日あたりの試合数に関する制約
                 problem += pulp.lpSum([h[0][i][j][w]+v[0][i][j][w] for j in I]) == 1
                 problem += pulp.lpSum([h[1][i][j][w]+v[1][i][j][w] for j in I]) == 1
-        
+                
+        for d in [0,1]:
+            for w in W:                
+                for i in I:
+                    for j in I:
+                        # iがホームでjと試合をする＝jはビジター(i)で試合をする
+                        problem += h[d][i][j][w]-v[d][j][i][w] == 0
+
+        # 非線形な目的関数を線形にするために導入した変数に関する制約 
+        for _from in I:
+            for to in I:
+                # 1週目の金曜日に行われる試合について
+                problem +=(1-pulp.lpSum([h[1][to][j][0]for j in I])-v[0][to][_from][0]+home[1][_from][to][0]>=0)
+                problem +=(pulp.lpSum([h[1][to][j][0]for j in I])-home[1][_from][to][0]>=0)
+                problem +=(v[0][to][_from][0]-home[1][_from][to][0]>=0) 
+                for w in W[1:]:
+                    # 2週目以降
+                    problem +=(1-pulp.lpSum([h[0][to][j][w]for j in I])-v[1][to][_from][w-1]+home[0][_from][to][w]>=0)
+                    problem +=(pulp.lpSum([h[0][to][j][w]for j in I])-home[0][_from][to][w]>=0)
+                    problem +=(v[1][to][_from][w-1]-home[0][_from][to][w]>=0)
+                    problem +=(1-pulp.lpSum([h[1][to][j][w]for j in I])-v[0][to][_from][w]+home[1][_from][to][w]>=0)
+                    problem +=(pulp.lpSum([h[1][to][j][w]for j in I])-home[1][_from][to][w]>=0)
+                    problem +=(v[0][to][_from][w]-home[1][_from][to][w]>=0)
+
         for team in I:
             for _from in I:
                 for to in I:
+                    # 1週目の金曜日に行われる試合について
+                    problem +=(1-v[1][team][to][0]-h[0][_from][team][0]+vis[1][team][_from][to][0]>=0)
+                    problem +=(v[1][team][to][0]-vis[1][team][_from][to][0]>=0)
+                    problem +=(h[0][_from][team][0]-vis[1][team][_from][to][0]>=0)
                     for w in W[1:]:
-                        # 非線形な目的関数を線形にするために導入した変数に関する制約                        
-                        problem +=(1-pulp.lpSum([h[0][to][j][w]for j in I])-v[1][to][_from][w-1]+home[0][_from][to][w]>=0)
-                        problem +=(pulp.lpSum([h[0][to][j][w]for j in I])-home[0][_from][to][w]>=0)
-                        problem +=(v[1][to][_from][w-1]-home[0][_from][to][w]>=0)
-                        problem +=(1-pulp.lpSum([h[1][to][j][w]for j in I])-v[0][to][_from][w]+home[1][_from][to][w]>=0)
-                        problem +=(pulp.lpSum([h[1][to][j][w]for j in I])-home[1][_from][to][w]>=0)
-                        problem +=(v[0][to][_from][w]-home[1][_from][to][w]>=0)
-
+                        # 2週目以降 
                         problem +=(1-v[0][team][to][w]-h[1][_from][team][w-1]+vis[0][team][_from][to][w]>=0)
                         problem +=(v[0][team][to][w]-vis[0][team][_from][to][w]>=0)
                         problem +=(h[1][_from][team][w-1]-vis[0][team][_from][to][w]>=0)
@@ -100,16 +149,15 @@ class Solve(NPB):
                         problem += (h[0][i][j][w]+v[0][i][j][w]+h[1][i][j][w]+v[1][i][j][w] <= 1)
                     else:
                         # 自チームとの試合は行えない
-                        problem += (h[0][i][j][w]+v[0][i][j][w]+h[1][i][j][w]+v[1][i][j][w] == 0)
+                        problem += (h[0][i][i][w]+v[0][i][i][w]+h[1][i][i][w]+v[1][i][i][w] == 0)
+
         for i in I:
             for j in I:
                 for w in W[1:]:
                     if i != j:
                         #同じ対戦カードは一週間に一回以下である、という制約
                         problem += (h[0][i][j][w]+v[0][i][j][w]+h[1][i][j][w-1]+v[1][i][j][w-1] <= 1)
-                    else:
-                        # 自チームとの試合は行えない
-                        problem += (h[0][i][j][w]+v[0][i][j][w]+h[1][i][j][w-1]+v[1][i][j][w-1] == 0)    
+                       
 
         for i in I:
             home_total = 0
@@ -121,49 +169,67 @@ class Solve(NPB):
                 vist_total += visitor_game
                 if i != j:
                     # ホームとビジターの試合数を調整するための制約
-                    problem += (4 <= home_game <= 5)
-                    problem += (4 <= visitor_game <= 5)
-                    problem += (8 <= home_game+visitor_game <= 9)
-                else:
-                    # 自チームとは試合をしない
-                    problem += home_game == 0
-                    problem += visitor_game == 0
+                    problem += (self.lb[type] <= home_game <= self.ub[type])
+                    problem += (self.lb[type] <= visitor_game <= self.ub[type])
+                    if type == "r_post":
+                        problem += (6 <= home_game+visitor_game <= 7)
+
             # トータルでホームゲームとビジターゲームをなるべく同数行う
             problem += home_total-vist_total == 0
     
         # solve this problem
-        solver = pulp.PULP_CBC_CMD(msg=1, options=option, threads=num_of_process, maxSeconds=1800)
+        solver = pulp.PULP_CBC_CMD(msg=1, options=option, threads=num_of_process, maxSeconds=time_limit)
         status = problem.solve(solver)
 
         return status, h, v
 
 
-    def InterLeague(self, num_of_process=1,option=[]):
+    def InterLeague(self, initial_position=None, num_of_process=1, option=[], time_limit=3600):
         # set local variables
         self.DistMatrix()
         D = self.D
         I = self.Teams['p']
         J = self.Teams['s']
         W_I = self.W['i']
+        K = I+J
 
         # declare problem type
         problem = pulp.LpProblem('GameSchesule')
 
         # set variables
-        h = pulp.LpVariable.dicts('home', ([0,1],I,J,W_I),0,1,'Integer')
-        v = pulp.LpVariable.dicts('visitor', ([0,1],I,J,W_I),0,1,'Integer')
-        home = pulp.LpVariable.dicts('new_home', ([0,1],J,I,W_I),0,1,'Integer')
-        vis = pulp.LpVariable.dicts('new_vis', ([0,1],I,J,J,W_I),0,1,'Integer')
-        home_vis = pulp.LpVariable.dicts('new_home_vis',([0,1],I,J,W_I),0,1,'Integer')
+        h = pulp.LpVariable.dicts('home', ([0,1],K,K,W_I),0,1,'Integer')
+        v = pulp.LpVariable.dicts('visitor', ([0,1],K,K,W_I),0,1,'Integer')
+        home = pulp.LpVariable.dicts('new_home', ([0,1],K,K,W_I),0,1,'Integer')
+        vis = pulp.LpVariable.dicts('new_vis', ([0,1],K,K,K,W_I),0,1,'Integer')
+        home_vis = pulp.LpVariable.dicts('new_home_vis',([0,1],K,K,W_I),0,1,'Integer')
 
         # set objective function
-        obj = [D[_from][to]*home[day][_from][to][w]for _from in J for to in I for w in W_I for day in [0,1]]
-        obj += [D[_from][to]*vis[day][team][_from][to][w]for _from in J for to in J for w in W_I for day in [0,1]for team in I]
-        obj += [D[_from][to]*home_vis[day][_from][to][w]for _from in I for to in J for w in W_I for day in [0,1]]
+        
+        obj = [D[_from][to]*home[day][_from][to][w]for _from in K for to in K for w in W_I for day in [0,1]]
+        obj += [D[_from][to]*vis[day][team][_from][to][w]for _from in K for to in K for w in W_I for day in [0,1]for team in I]
+        obj += [D[_from][to]*home_vis[day][_from][to][w]for _from in K for to in K for w in W_I for day in [0,1]]
+        if initial_position:
+            obj += [D[initial_position[team]][team]*pulp.lpSum([h[0][team][j][0]for j in K])+D[initial_position[team]][to]*v[0][team][to][0]for team in K for to in K]
         obj = pulp.lpSum(obj)
         problem += obj
 
         # set constraints
+        # 自リーグとは試合をしない
+        for d in [0,1]:
+            for w in W_I:
+                for i in I:
+                    for j in I:
+                        problem += h[d][i][j][w] == 0
+                        problem += v[d][i][j][w] == 0
+                for i in J:
+                    for j in J:
+                        problem += h[d][i][j][w] == 0
+                        problem += v[d][i][j][w] == 0
+                for i in I:
+                    for j in J:
+                        # iがホームでjと試合をする＝jはビジター(i)で試合をする
+                        problem += h[d][i][j][w]-v[d][j][i][w] == 0
+                        problem += h[d][j][i][w]-v[d][i][j][w] == 0
         for i in I:
             # 総試合数
             problem += pulp.lpSum([h[0][i][j][w]+v[0][i][j][w]+h[1][i][j][w]+v[1][i][j][w] for j in J for w in W_I]) == self.total_game["i"]
@@ -182,7 +248,12 @@ class Solve(NPB):
         # 非線形な目的関数を線形にするために導入した変数に関する制約 
         for _from in J:
             for to in I:
+                # 1週目の金曜日に行われる試合について
+                problem +=(1-pulp.lpSum([h[1][to][j][0]for j in J])-v[0][to][_from][0]+home[1][_from][to][0]>=0)
+                problem +=(pulp.lpSum([h[1][to][j][0]for j in J])-home[1][_from][to][0]>=0)
+                problem +=(v[0][to][_from][0]-home[1][_from][to][0]>=0)
                 for w in W_I[1:]:
+                    # 2週目以降
                     problem +=(1-pulp.lpSum([h[0][to][j][w]for j in J])-v[1][to][_from][w-1]+home[0][_from][to][w]>=0)
                     problem +=(pulp.lpSum([h[0][to][j][w]for j in J])-home[0][_from][to][w]>=0)
                     problem +=(v[1][to][_from][w-1]-home[0][_from][to][w]>=0)
@@ -193,7 +264,12 @@ class Solve(NPB):
         for team in I:
             for _from in J:
                 for to in J:
-                    for w in W_I[1:]:                       
+                    # 1週目の金曜日に行われる試合について
+                    problem +=(1-v[1][team][to][0]-v[0][team][_from][0]+vis[1][team][_from][to][0]>=0)
+                    problem +=(v[1][team][to][0]-vis[1][team][_from][to][0]>=0)
+                    problem +=(v[0][team][_from][0]-vis[1][team][_from][to][0]>=0)
+                    for w in W_I[1:]:  
+                        # 2週目以降                     
                         problem +=(1-v[0][team][to][w]-v[1][team][_from][w-1]+vis[0][team][_from][to][w]>=0)
                         problem +=(v[0][team][to][w]-vis[0][team][_from][to][w]>=0)
                         problem +=(v[1][team][_from][w-1]-vis[0][team][_from][to][w]>=0)
@@ -203,7 +279,12 @@ class Solve(NPB):
         
         for _from in I:
             for to in J:
+                # 1週目の金曜日に行われる試合について
+                problem +=(1-pulp.lpSum([h[1][_from][j][0]for j in J])-v[0][_from][to][0]+home_vis[1][_from][to][0]>=0)
+                problem +=(pulp.lpSum([h[1][_from][j][0]for j in J])-home_vis[1][_from][to][0]>=0)
+                problem +=(v[0][_from][to][0]-home_vis[1][_from][to][0]>=0)                    
                 for w in W_I[1:]:
+                    # 2週目以降
                     problem +=(1-pulp.lpSum([h[0][_from][j][w]for j in J])-v[1][_from][to][w-1]+home_vis[0][_from][to][w]>=0)
                     problem +=(pulp.lpSum([h[0][_from][j][w]for j in J])-home_vis[0][_from][to][w]>=0)
                     problem +=(v[1][_from][to][w-1]-home_vis[0][_from][to][w]>=0)
@@ -245,16 +326,50 @@ class Solve(NPB):
             problem += vv == 3
 
         # solve this problem
-        solver = pulp.PULP_CBC_CMD(msg=1, options=option, threads=num_of_process, maxSeconds=1800)
+        solver = pulp.PULP_CBC_CMD(msg=1, options=option, threads=num_of_process, maxSeconds=time_limit)
         status = problem.solve(solver)
 
         return status, h, v
 
 
+    def FinalPosition(self, h, v, league, type):
+        initial_position = [0]*12
+        if type in ["r_pre","r_post"]:
+            I = self.Teams[league]
+            W = self.W[type]
+            w_end = W[-1]
+            for i in I:
+                for j in I:
+                    if h[1][i][j][w_end] == 1:
+                        initial_position[i] = i
+                    elif v[1][i][j][w_end] == 1:
+                        initial_position[i] = j
+        else:
+            I = self.Teams['p']
+            J = self.Teams['s']
+            W = self.W['i']
+            w_end = W[-1]
+            for i in I:
+                for j in J:
+                    if h[1][i][j][w_end] == 1:
+                        initial_position[i] = i
+                    elif v[1][i][j][w_end] == 1:
+                        initial_position[i] = j
+            for j in J:
+                for i in I:
+                    if h[1][i][j][w_end] == 1:
+                        initial_position[j] = i
+                    elif v[1][i][j][w_end] == 1:
+                        initial_position[j] = j
+        
+        return initial_position
+
+
+
 class Output(NPB):
     def __init__(self):
         super().__init__()
-        self.schesules = {"r":dict(), "i":dict()}
+        self.schesules = {"r":dict(), "r_pre":dict(), "r_post":dict(), "i":dict()}
         self.DistMatrix()
         self.dists = dict()
     
@@ -264,7 +379,7 @@ class Output(NPB):
             return
         I = self.Teams[league]
         W = self.W[game_type]
-        if game_type == "r":
+        if game_type in ["r_pre","r_post"]:
             J = I                              
         else:
             if league == 'p':
@@ -295,6 +410,15 @@ class Output(NPB):
                                 self.schesules[game_type][j].append((w,day,i,'HOME'))
                 self.schesules[game_type][j].sort()
 
+    def MergelarSchesule(self):
+        schesule = self.schesules['r']
+        leagues = ['p','s']
+        for league in leagues:
+            I = self.Teams[league]
+            for i in I:
+                schesule[i] = self.schesules['r_pre'][i]+self.schesules['r_post'][i]
+        
+ 
     def GamePerDay(self, w, d, league, game_type='r'):
         pycolor = color.pycolor
         schesule = self.schesules[game_type]

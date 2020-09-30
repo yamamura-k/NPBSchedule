@@ -7,3 +7,6 @@ class Base:
             self.W = dict()
             self.Teams_name = None
             self.total_game = dict()
+            self.total_game['i'] = 6
+            self.lb = dict()
+            self.ub = dict()
