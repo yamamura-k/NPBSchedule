@@ -410,7 +410,7 @@ class Output(NPB):
                                 self.schesules[game_type][j].append((w,day,i,'HOME'))
                 self.schesules[game_type][j].sort()
 
-    def MergelarSchesule(self):
+    def MergeRegularSchesule(self):
         schesule = self.schesules['r']
         leagues = ['p','s']
         for league in leagues:
