@@ -132,6 +132,6 @@ if __name__ == "__main__":
 
     if args.dbg:
         dbg_option = ['maxsol 1']
-        main(num_process=num_process,options=dbg_option,solver=solver)
+        main(num_process=num_process,options=dbg_option,time_limit=limit,solver=solver)
     else: 
         main(num_process=num_process,time_limit=limit,solver=solver)
