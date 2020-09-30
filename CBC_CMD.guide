@@ -1,0 +1,47 @@
+# CBC_CMDに渡せる引数について
+class pulp.apis.PULP_CBC_CMD(mip=True, msg=True, timeLimit=None, 
+fracGap=None, maxSeconds=None, gapRel=None, gapAbs=None, presolve=None, 
+cuts=None, strong=None, options=None, warmStart=False, keepFiles=False, path=None, 
+threads=None, logPath=None, mip_start=False)
+
+Bases: pulp.apis.coin_api.COIN_CMD
+
+This solver uses a precompiled version of cbc provided with the package
+
+Parameters
+mip (bool) – if False, assume LP even if integer variables
+
+msg (bool) – if False, no log is shown
+
+timeLimit (float) – maximum time for solver (in seconds)
+
+gapRel (float) – relative gap tolerance for the solver to stop (in fraction)
+
+gapAbs (float) – absolute gap tolerance for the solver to stop
+
+threads (int) – sets the maximum number of threads
+
+options (list) – list of additional options to pass to solver
+
+warmStart (bool) – if True, the solver will use the current value of variables as a start
+
+keepFiles (bool) – if True, files are saved in the current directory and not deleted after solving
+
+path (str) – path to the solver binary
+
+logPath (str) – path to the log file
+
+presolve (bool) – if True, adds presolve on
+
+cuts (bool) – if True, adds gomory on knapsack on probing on
+
+strong (bool) – if True, adds strong
+
+fracGap (float) – deprecated for gapRel
+
+maxSeconds (float) – deprecated for timeLimit
+
+mip_start (bool) – deprecated for warmStart
+
+name = 'PULP_CBC_CMD'
+pulp_cbc_path = '/home/pchtsp/Documents/resources/pulp/pulp/apis/../solverdir/cbc/linux/64/cbc'

@@ -97,7 +97,7 @@ def argparser():
 
     parser.add_argument(
         '-t','--time',
-        help='time limit of solver. format is [time limit]seconds.',
+        help='maximum time for solver in seconds.',
         default=None,
         dest='t',
         type=int
@@ -125,9 +125,11 @@ if __name__ == "__main__":
     # 綺麗な結果出力用のプログラムも作成する
     parser = argparser()
     args   = parser.parse_args()
+
     num_process = args.th
     limit = args.t
     solver = args.s
+
     if args.dbg:
         dbg_option = ['maxsol 1']
         main(num_process=num_process,options=dbg_option,solver=solver)

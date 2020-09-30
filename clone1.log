@@ -1,0 +1,18 @@
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/4a499ac2dad749cc83ae6a9b6c735d93-pulp.lp' Clone_1 (V12.10.0.0) Wed Sep 30 16:54:45 2020
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/4a499ac2dad749cc83ae6a9b6c735d93-pulp.lp' Clone_1 (V12.10.0.0) Wed Sep 30 16:54:48 2020
+
+Tried aggregator 1 time.
+LP Presolve eliminated 7596 rows and 3198 columns.
+All rows and columns eliminated.
+Presolve time = 0.00 sec. (2.77 ticks)
+
+Total time on 1 threads = 0.00 sec. (100.73 ticks)
+
+Dual simplex solved model.
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/5e13224f471148e7a29a1ad9a666bac5-pulp.lp' Clone_1 (V12.10.0.0) Wed Sep 30 16:54:54 2020
+

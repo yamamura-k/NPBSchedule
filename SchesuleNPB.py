@@ -195,7 +195,7 @@ class Solve(NPB):
         if solver == 0:
             solver = pulp.PULP_CBC_CMD(msg=1, options=option, threads=num_of_process, maxSeconds=time_limit)
         elif solver == 1:
-            solver = pulp.CPLEX_CMD()
+            solver = pulp.CPLEX_CMD(msg=1, timeLimit=time_limit, options=option, threads=num_of_process)
         status = problem.solve(solver)
 
         return status, h, v
@@ -352,7 +352,7 @@ class Solve(NPB):
         if solver == 0:
             solver = pulp.PULP_CBC_CMD(msg=1, options=option, threads=num_of_process, maxSeconds=time_limit)
         elif solver == 1:
-            solver = pulp.CPLEX_CMD()
+            solver = pulp.CPLEX_CMD(msg=1, timeLimit=time_limit, options=option, threads=num_of_process)
         status = problem.solve(solver)
 
         return status, h, v
