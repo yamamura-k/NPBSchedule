@@ -115,6 +115,7 @@ class Solve(NPB):
                 # 1日あたりの試合数に関する制約
                 problem += pulp.lpSum([h[0][i][j][w]+v[0][i][j][w] for j in I]) == 1
                 problem += pulp.lpSum([h[1][i][j][w]+v[1][i][j][w] for j in I]) == 1
+                problem += pulp.lpSum([h[d][i][j][w]+v[d][i][j][w] for j in I for d in [0,1]]) == 2
                 
         for d in [0,1]:
             for w in W:                
