@@ -1,0 +1,49 @@
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/25ff556714b8436a9da5a68fe3f4e528-pulp.lp' Clone_2 (V12.10.0.0) Wed Sep 30 21:06:34 2020
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/e5821d6e3ea042498f0caafb608930c9-pulp.lp' Clone_2 (V12.10.0.0) Wed Sep 30 23:18:30 2020
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/3a048b4dc2f741f787f26903c5736323-pulp.lp' Clone_2 (V12.10.0.0) Thu Oct  1 00:48:40 2020
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/4e86143ff2124fdfa70a62ef3bb895c7-pulp.lp' Clone_2 (V12.10.0.0) Thu Oct  1 02:18:41 2020
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/fc70f93a7cea43beb212d34f83c80fc6-pulp.lp' Clone_2 (V12.10.0.0) Thu Oct  1 02:22:15 2020
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/fa8bf3b3c1ec43d1bba725b6c0b7cb4f-pulp.lp' Clone_2 (V12.10.0.0) Thu Oct  1 03:52:38 2020
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/cae2bd3322ee477eacb8d39a581a7b94-pulp.lp' Clone_2 (V12.10.0.0) Thu Oct  1 08:17:35 2020
+
+Advanced basis not built.
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/19724fcea1704ae6ba2c79f93144b544-pulp.lp' Clone_2 (V12.10.0.0) Thu Oct  1 09:07:09 2020
+
+Advanced basis not built.
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/19724fcea1704ae6ba2c79f93144b544-pulp.lp' Clone_2 (V12.10.0.0) Thu Oct  1 09:28:17 2020
+
+Tried aggregator 1 time.
+LP Presolve eliminated 26100 rows and 10326 columns.
+All rows and columns eliminated.
+Presolve time = 0.01 sec. (9.39 ticks)
+
+Dual simplex solved model.
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/59d14e63093a49b899ffd90344d6a225-pulp.lp' Clone_2 (V12.10.0.0) Thu Oct  1 09:39:25 2020
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/59d14e63093a49b899ffd90344d6a225-pulp.lp' Clone_2 (V12.10.0.0) Thu Oct  1 09:48:52 2020
+
+Tried aggregator 1 time.
+LP Presolve eliminated 26120 rows and 10326 columns.
+All rows and columns eliminated.
+Presolve time = 0.01 sec. (10.08 ticks)
+
+Dual simplex solved model.
+
