@@ -59,7 +59,7 @@ def main(num_process=1,options=[],time_limit=None,solver=0):
     output = SchesuleNPB.Output()
     leagues = ['p', 's']
 
-    #Solve(num_process,options,time_limit=time_limit,solver = solver)
+    # Solve(num_process,options,time_limit=time_limit,solver = solver)
     
     for league in leagues:
         filename_h = 'r_pre_'+league+'_h.pkl'

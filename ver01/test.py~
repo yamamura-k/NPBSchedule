@@ -49,7 +49,9 @@ def _main(num_process=1,options=[],time_limit=None,solver=0):
     h,v = Load('i_ps_h.pkl','i_ps_v.pkl')
     initial_position['r'] = sol.FinalPosition(h, v, None, 'i')
     for league in leagues:
-        status, h, v = sol.RegularGame(league,"r_post",initial_position=initial_position['r'],num_of_process=num_process,option=options)
+        if league == 'p':
+            continue
+        status, h, v = sol.RegularGame(league,"r_post",time_limit=time_limit,initial_position=initial_position['r'],num_of_process=num_process,option=options,solver=solver)
         preserve(h,v,'r_post_'+league)  
 
 
@@ -57,7 +59,7 @@ def main(num_process=1,options=[],time_limit=None,solver=0):
     output = SchesuleNPB.Output()
     leagues = ['p', 's']
 
-    Solve(num_process,options,time_limit=time_limit,solver = solver)
+    # Solve(num_process,options,time_limit=time_limit,solver = solver)
     
     for league in leagues:
         filename_h = 'r_pre_'+league+'_h.pkl'
@@ -75,6 +77,20 @@ def main(num_process=1,options=[],time_limit=None,solver=0):
         output.getSchesule(1, h, v, 'r_post', league=league)
 
     output.MergeRegularSchesule()
+    
+    # debagging
+    if options:
+        # _main(num_process=1,options=[],time_limit=None,solver=0)
+        for game in ['r','r_pre','r_post','i']:
+            for i in range(12):
+                if len(output.schesules[game][i]) != output.total_game[game]:
+                    print(game,i)
+                    output.GameTable(i)
+        
+        for i in range(12):
+            output.CountGames(i)
+        exit()
+    
     output.Visualize()
     output.GameTables()
     output.GameSchesule()
@@ -121,6 +137,8 @@ def argparser():
 
     return parser
 
+
+
 if __name__ == "__main__":
     # 綺麗な結果出力用のプログラムも作成する
     parser = argparser()
@@ -131,6 +149,8 @@ if __name__ == "__main__":
     solver = args.s
 
     if args.dbg:
+        #_main(num_process=num_process,time_limit=limit,solver=solver)
+        #exit()
         dbg_option = ['maxsol 1']
         main(num_process=num_process,options=dbg_option,time_limit=limit,solver=solver)
     else: 
