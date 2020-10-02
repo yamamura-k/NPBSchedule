@@ -4,31 +4,44 @@ from utils.utils import Load, preserve
 from argparse import ArgumentParser
 
 
-def Solve(num_process=1,options=[],time_limit=None,solver=0):
+def Solve(num_process=1,options=[],time_limit=None,solver=0,option=[]):
     initial_position = dict()
     sol = ScheduleNPB.Solve()
     leagues = ['p', 's']
 
     for league in leagues:
-        status, e = sol.Solve("r_pre",league=league,threads=num_process,timeLimit=time_limit,solverName=solver)
+        status, e = sol.Solve("r_pre",league=league,threads=num_process,timeLimit=time_limit,solverName=solver,option=options)
         initial_position[league] = sol.FinalPosition(e, league, 'r_pre')
         preserve(e,'r_pre_'+league)
 
     position_for_inter = sol.Merge(initial_position['p'],initial_position['s'])
-    status, e = sol.Solve('i', initialPosition = position_for_inter, threads=num_process,timeLimit=time_limit,solverName=solver)
+    status, e = sol.Solve('i', initialPosition = position_for_inter, threads=num_process,timeLimit=time_limit,solverName=solver,option=options)
     preserve(e,'i_ps')
 
     initial_position['r'] = sol.FinalPosition(e, None, 'i')
     for league in leagues:
-        status, e = sol.Solve("r_post",league=league,initialPosition=initial_position['r'],threads=num_process,timeLimit=time_limit,solverName=solver)
+        status, e = sol.Solve("r_post",league=league,initialPosition=initial_position['r'],threads=num_process,timeLimit=time_limit,solverName=solver,option=options)
         preserve(e,'r_post_'+league)     
 
+def partSolve(num_process=1,options=[],time_limit=None,solver=0,option=[]):
+    initial_position = dict()
+    sol = ScheduleNPB.Solve()
+    leagues = ['p', 's']
+
+    for league in leagues:
+        e = Load('r_pre_'+league+'.pkl')
+        initial_position[league] = sol.FinalPosition(e, league, 'r_pre')
+        preserve(e,'r_pre_'+league)
+
+    position_for_inter = sol.Merge(initial_position['p'],initial_position['s'])
+    status, e = sol.Solve('i', initialPosition = position_for_inter, threads=num_process,timeLimit=time_limit,solverName=solver,option=options)
+    preserve(e,'i_ps')
 
 def main(num_process=1,options=[],time_limit=None,solver=0):
     output = ScheduleNPB.Output()
     leagues = ['p', 's']
 
-    Solve(num_process,options,time_limit=time_limit,solver=solver)
+    Solve(num_process,options,time_limit=time_limit,solver=solver,option=options)
     
     for league in leagues:
         filename = 'r_pre_'+league+'.pkl'
@@ -42,9 +55,9 @@ def main(num_process=1,options=[],time_limit=None,solver=0):
         filename= 'r_post_'+league+'.pkl'
         e = Load(filename)
         output.getSchedule(e, 'r_post', league=league)
-    output.getWholeSchedule()
-    #print(len(output.schedules['all'][0]))
-    #output.checkAnswer()
+    #output.getWholeSchedule()
+    print(len(output.schedules['all'][0]))
+    output.checkAnswer()
     
 
 def argparser():
@@ -96,9 +109,9 @@ if __name__ == "__main__":
     solver = args.s
 
     if args.dbg:
-        #_main(num_process=num_process,time_limit=limit,solver=solver)
-        #exit()
         dbg_option = ['maxsol 1']
+        partSolve(num_process=num_process,options=dbg_option,time_limit=limit,solver=solver)
+        exit()
         main(num_process=num_process,options=dbg_option,time_limit=limit,solver=solver)
     else: 
         main(num_process=num_process,time_limit=limit,solver=solver)
