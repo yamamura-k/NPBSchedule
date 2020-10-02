@@ -754,8 +754,9 @@ class Output(NPB):
                 row = 0
             route_x = []
             route_y = []
-        save_dir = "./result/"
+        save_dir = "./result/png"
         plt.savefig(os.path.join(save_dir,'{}_{}.png'.format(game_type,league)))
+        plt.close()
 
     def plotOnMap(self, team, game_type):
         """
@@ -771,8 +772,8 @@ class Output(NPB):
         fig = plt.figure()
         m = Basemap(projection='lcc', lat_0 = 35.4, lon_0 = 136.7,
                     resolution = 'i', area_thresh = 0.1,
-                    llcrnrlon=125., llcrnrlat=30.,
-                    urcrnrlon=150., urcrnrlat=50.)
+                    llcrnrlon=128., llcrnrlat=30.,
+                    urcrnrlon=147., urcrnrlat=46.)
         # 各チームの本拠地をプロット
         # パ・リーグ
         x,y = m([self.coordinates[i][1]for i in range(6)],
@@ -794,13 +795,15 @@ class Output(NPB):
         route_x,route_y = m(route_x, route_y)  
         # 移動経路の描画
         m.plot(route_x, route_y, 'r-')
-        # 海岸線を描く、国境を塗る、大陸を塗る
+        # 海岸線を描く、国境を塗る、海(背景)を塗る, 大陸を塗る
         m.drawcoastlines(linewidth=0.25)
         m.drawcountries(linewidth=0.25)
-        m.fillcontinents(color='white',lake_color='aqua')
+        m.drawmapboundary(fill_color='skyblue')
+        m.fillcontinents(color='bisque',lake_color='skyblue')
         # 画像を保存
-        save_dir = "./result/"
+        save_dir = "./result/png"
         plt.savefig(os.path.join(save_dir,'{}_{}.png'.format(game_type,team)))
+        plt.close()
 
     def Visualize(self):
         """
