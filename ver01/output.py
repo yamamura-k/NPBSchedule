@@ -1,5 +1,4 @@
-from ver01.ScheduleNPB import Output
-import ScheduleNPB.Output
+from ScheduleNPB import Output
 from utils.utils import Load
 
 from argparse import ArgumentParser
