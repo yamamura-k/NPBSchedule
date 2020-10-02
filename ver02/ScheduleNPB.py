@@ -47,8 +47,8 @@ class NPB():
         self.ub["r_pre"]  = 1
         self.lb["r_post"] = 3
         self.ub["r_post"] = 4
-        self.lb["i"]      = 3
-        self.ub["i"]      = 3
+        self.lb["i"]      = 0
+        self.ub["i"]      = 1
 
         self.D = [[0]*12 for _ in range(12)]
         self.DistMatrix()
@@ -77,8 +77,9 @@ class Solve(NPB):
     def __init__(self) -> None:
         super().__init__()
 
-    def Solve(self, game_type, league='p', timeLimit=None, solverName=None, threads=1, initialPosition=None):
+    def Solve(self, game_type, league='p', timeLimit=None, solverName=None, threads=1, option=[], initialPosition=None):
         """
+        交流戦の定式化はまた考えた方が良いかも。
         """
         # 定数
         I = self.Teams[league]
@@ -133,7 +134,7 @@ class Solve(NPB):
         for i in I:
             for j in I:
                 # 各対戦カードにおけるホームとビジターの試合数をなるべく揃える。パワポで言う制約④
-                if i != j:
+                if i < j:
                     problem += pulp.lpSum([v[s][i][j] for s in S])-pulp.lpSum([v[s][j][i] for s in S]) <= 1
                     problem += pulp.lpSum([v[s][i][j] for s in S])-pulp.lpSum([v[s][j][i] for s in S]) >= -1
                     problem += pulp.lpSum([v[s][i][j] for s in S]) <= self.ub[game_type]
@@ -142,40 +143,43 @@ class Solve(NPB):
         for s in S:
             for i in I:
                 # 1日必ず1試合する。パワポで言う制約⑤
-                problem += pulp.lpSum([v[s][i][j]for j in I]) == 1
+                problem += pulp.lpSum([v[s][i][j]for j in I]) == 1           
         
-        for s in S[:-3]:
+        for s in S[:-2]:
             for i in I:
                 for j in I:
                     # 連戦はしない。パワポで言う制約⑥
                     if i!=j:
                         problem += pulp.lpSum([v[t][i][j]+v[t][j][i]for t in range(s,s+3)]) <= 1
         
-        for s in S[:-2]:
-            for i in I:
-                # ホームでの試合は連続二回まで
-                problem += v[s][i][i]+v[s+1][i][i] <= 2
-        
         if game_type == 'i':
             # 自分のリーグに属するチームとは試合を行わないと言う制約
-            I = self.Teams['p']
+            L = self.Teams['p']
             J = self.Teams['s']
             for s in S:
-                for i in I:
-                    for j in I:
+                for i in L:
+                    for j in L:
                         if i != j:
                             problem += v[s][i][j] == 0
                 for i in J:
                     for j in J:
                         if i != j:
                             problem += v[s][i][j] == 0
+            # ビジターで試合をしている時はホームで試合をしてはいけない
+            # v[s][i][i]=1かv[s][i][j]=1の何か一方が成立する
+            for s in S:
+                for i in L:
+                    problem += v[s][i][i]+pulp.lpSum([v[s][i][j]for j in J]) <= 1
+                for j in J:
+                    problem += v[s][j][j]+pulp.lpSum([v[s][j][i]for i in L]) <= 1
+                       
         
         # solverの設定
         # デフォルトは cbc solver
         if solverName == 0:
-            solver = pulp.PULP_CBC_CMD(msg=1, threads=threads, maxSeconds=timeLimit)
+            solver = pulp.PULP_CBC_CMD(msg=1, threads=threads,options=option, maxSeconds=timeLimit)
         elif solverName == 1:
-            solver = pulp.CPLEX_CMD(msg=1, timeLimit=timeLimit, threads=threads)
+            solver = pulp.CPLEX_CMD(msg=1, timeLimit=timeLimit,options=option, threads=threads)
         
         status = problem.solve(solver)
 
@@ -213,23 +217,26 @@ class Solve(NPB):
 class Output(NPB):
     def __init__(self) -> None:
         super().__init__()
-        unit = {i:[]for i in self.K}
-        self.schedules = {'all':unit,'r':unit,'r_pre':unit,'r_post':unit,'i':unit}
+        self.schedules = {'all':{i:[]for i in self.K},'r':{i:[]for i in self.K},
+                          'r_pre':{i:[]for i in self.K},'r_post':{i:[]for i in self.K},
+                          'i':{i:[]for i in self.K}}
         self.dists     = dict()
     
     def getSchedule(self, v, game_type, league='p'):
         I = self.Teams[league]
         if game_type == 'i':
             I = self.K
-        for s in self.S[game_type]:
-            for i in I:
-                for j in I:
+        for i in I:
+            for j in I:
+                for s in self.S[game_type]:
                     if v[s][i][j].value() == 1:
-                        print(s,i,j)
                         if i != j:
                             self.schedules[game_type][i].append((s,j,'visitor'))
                         else:
-                            self.schedules[game_type][i].append((s,None,'home'))
+                            self.schedules[game_type][i].append((s,-1,'home'))
+
+            self.schedules[game_type][i].sort()
+            print(len(self.schedules[game_type][i]))
 
     def getWholeSchedule(self):
         for i in self.K:
