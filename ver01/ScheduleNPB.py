@@ -207,9 +207,9 @@ class Solve(NPB):
     
         # solve this problem
         if solver == 0:
-            solver = pulp.PULP_CBC_CMD(msg=1, options=option, threads=num_of_process, maxSeconds=time_limit)
+            solver = pulp.PULP_CBC_CMD(msg=0, options=option, threads=num_of_process, maxSeconds=time_limit)
         elif solver == 1:
-            solver = pulp.CPLEX_CMD(msg=1, timeLimit=time_limit, options=option, threads=num_of_process)
+            solver = pulp.CPLEX_CMD(msg=0, timeLimit=time_limit, options=option, threads=num_of_process)
         status = problem.solve(solver)
 
         return status, h, v
@@ -363,9 +363,9 @@ class Solve(NPB):
 
         # solve this problem
         if solver == 0:
-            solver = pulp.PULP_CBC_CMD(msg=1, options=option, threads=num_of_process, maxSeconds=time_limit)
+            solver = pulp.PULP_CBC_CMD(msg=0, options=option, threads=num_of_process, maxSeconds=time_limit)
         elif solver == 1:
-            solver = pulp.CPLEX_CMD(msg=1, timeLimit=time_limit, options=option, threads=num_of_process)
+            solver = pulp.CPLEX_CMD(msg=0, timeLimit=time_limit, options=option, threads=num_of_process)
         status = problem.solve(solver)
 
         return status, h, v
@@ -481,7 +481,10 @@ class Output(NPB):
             for i in I:
                 schedule[i] = self.schedules['r_pre'][i]+self.schedules['r_post'][i]
         
- 
+
+#==============================================================================#
+# スケジュールを表示する関数
+#==============================================================================# 
     def GamePerDay(self, w, d, league, game_type='r'):
         """
         週と曜日を指定した際に行われる試合を出力する関数。
@@ -499,7 +502,7 @@ class Output(NPB):
                     if schedule[i][k][0] == w and schedule[i][k][1]==d and schedule[i][k][-1] == 'HOME':
                         place = self.Teams_name[i]
                         print(self.stadium[i])
-                        print(pycolor.GREEN+self.Teams_name[i]+pycolor.END+":"+pycolor.PURPLE+self.Teams_name[schedule[i][k][2]]+pycolor.END)
+                        print(pycolor.GREEN+self.Teams_name[i]+pycolor.END+" vs "+pycolor.PURPLE+self.Teams_name[schedule[i][k][2]]+pycolor.END)
                     
         else:
             I = self.Teams['p']
@@ -509,13 +512,13 @@ class Output(NPB):
                     if schedule[i][k][0] == w and schedule[i][k][1]==d and schedule[i][k][-1] == 'HOME':
                         place = self.Teams_name[i]
                         print(self.stadium[i])
-                        print(pycolor.GREEN+self.Teams_name[i]+pycolor.END+":"+pycolor.PURPLE+self.Teams_name[schedule[i][k][2]]+pycolor.END)
+                        print(pycolor.GREEN+self.Teams_name[i]+pycolor.END+" vs "+pycolor.PURPLE+self.Teams_name[schedule[i][k][2]]+pycolor.END)
             for i in J:
                 for k in range(len(schedule[i])):
                     if schedule[i][k][0] == w and schedule[i][k][1]==d and schedule[i][k][-1] == 'HOME':
                         place = self.Teams_name[i]
                         print(self.stadium[i])
-                        print(pycolor.GREEN+self.Teams_name[i]+pycolor.END+":"+pycolor.PURPLE+self.Teams_name[schedule[i][k][2]]+pycolor.END)
+                        print(pycolor.GREEN+self.Teams_name[i]+pycolor.END+" vs "+pycolor.PURPLE+self.Teams_name[schedule[i][k][2]]+pycolor.END)
 
     def Gameschedule(self):
         """
@@ -567,6 +570,9 @@ class Output(NPB):
         for i in range(12):
             self.GameTable(i)
 
+#==============================================================================#
+# 移動距離を計算する関数
+#==============================================================================#
     def CalcDist(self, team, type):
         """
         通常->交流戦
@@ -649,6 +655,10 @@ class Output(NPB):
             i,d = v
             print(self.Teams_name[i]+':{}km'.format(d))
 
+#==============================================================================#
+# 結果が正当なものか、簡単に確認するための関数
+#==============================================================================#
+
     def CountGames(self, team):
         """
         debugging tool
@@ -692,6 +702,10 @@ class Output(NPB):
         print('交流戦')
         for j in game_number_i:
             print(*game_number_i[j], sum(game_number_i[j]))   
+
+#==============================================================================#
+# 結果を視覚的に表示する関数
+#==============================================================================#
 
     def Plot(self, game_type, league):
         """
@@ -744,6 +758,9 @@ class Output(NPB):
         plt.savefig(os.path.join(save_dir,'{}_{}.png'.format(game_type,league)))
 
     def plotOnMap(self, team, game_type):
+        """
+        移動経路を日本地図上にプロットする関数
+        """
         # 定数の設定
         total_game = self.total_game[game_type]
         schedule = self.schedules[game_type][team]
@@ -751,6 +768,7 @@ class Output(NPB):
         route_y = []    
         from mpl_toolkits.basemap import Basemap
         # 地図の描画
+        fig = plt.figure()
         m = Basemap(projection='lcc', lat_0 = 35.4, lon_0 = 136.7,
                     resolution = 'i', area_thresh = 0.1,
                     llcrnrlon=125., llcrnrlat=30.,
@@ -779,7 +797,7 @@ class Output(NPB):
         # 海岸線を描く、国境を塗る、大陸を塗る
         m.drawcoastlines(linewidth=0.25)
         m.drawcountries(linewidth=0.25)
-        m.fillcontinents(color='coral',lake_color='aqua')
+        m.fillcontinents(color='white',lake_color='aqua')
         # 画像を保存
         save_dir = "./result/"
         plt.savefig(os.path.join(save_dir,'{}_{}.png'.format(game_type,team)))
