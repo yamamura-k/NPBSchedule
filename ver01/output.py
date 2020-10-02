@@ -49,6 +49,14 @@ def main(args):
         h,v = Load(filename_h,filename_v)
         output.getschedule(1, h, v, 'r_post', league=league)
     output.MergeRegularschedule()
+    
+    for game in ['r','r_pre','r_post','i']:
+        for i in range(12):
+            if len(output.schedules[game][i]) != output.total_game[game]:
+                print(game,i)
+                output.GameTable(i)   
+    for i in range(12):
+        output.CountGames(i)
 
     if args.d:
         output.TotalDists()

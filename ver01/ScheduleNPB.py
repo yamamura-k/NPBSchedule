@@ -172,8 +172,9 @@ class Solve(NPB):
                 for w in W[1:]:
                     if i != j:
                         #同じ対戦カードは一週間に一回以下である、という制約
-                        problem += (h[0][i][j][w]+v[0][i][j][w]+h[1][i][j][w-1]+v[1][i][j][w-1] <= 1)
-                       
+                        problem += (h[0][i][j][w]+v[0][i][j][w]+h[1][i][j][w-1]+v[1][i][j][w-1] <= 1) 
+                   
+
         total = dict()
         for i in I:
             total[i] = 0
@@ -207,9 +208,9 @@ class Solve(NPB):
     
         # solve this problem
         if solver == 0:
-            solver = pulp.PULP_CBC_CMD(msg=0, options=option, threads=num_of_process, maxSeconds=time_limit)
+            solver = pulp.PULP_CBC_CMD(msg=1, options=option, threads=num_of_process, maxSeconds=time_limit)
         elif solver == 1:
-            solver = pulp.CPLEX_CMD(msg=0, timeLimit=time_limit, options=option, threads=num_of_process)
+            solver = pulp.CPLEX_CMD(msg=1, timeLimit=time_limit, options=option, threads=num_of_process)
         status = problem.solve(solver)
 
         return status, h, v
@@ -279,7 +280,7 @@ class Solve(NPB):
             for w in W_I:
                 for day in [0,1]:
                     # 1日一試合
-                    problem += pulp.lpSum([h[day][i][j][w]+v[day][i][j][w] for i in I]) == 1
+                    problem += pulp.lpSum([h[day][j][i][w]+v[day][j][i][w] for i in I]) == 1
 
         # 非線形な目的関数を線形にするために導入した変数に関する制約 
         for _from in J:
@@ -354,8 +355,8 @@ class Solve(NPB):
             hh = 0
             vv = 0
             for i in I:
-                home_game    = pulp.lpSum([h[0][i][j][w]+h[1][i][j][w] for w in W_I])
-                visitor_game = pulp.lpSum([v[0][i][j][w]+v[1][i][j][w] for w in W_I])
+                home_game    = pulp.lpSum([h[0][j][i][w]+h[1][j][i][w] for w in W_I])
+                visitor_game = pulp.lpSum([v[0][j][i][w]+v[1][j][i][w] for w in W_I])
                 hh += home_game
                 vv += visitor_game
             problem += hh == 3
@@ -363,9 +364,9 @@ class Solve(NPB):
 
         # solve this problem
         if solver == 0:
-            solver = pulp.PULP_CBC_CMD(msg=0, options=option, threads=num_of_process, maxSeconds=time_limit)
+            solver = pulp.PULP_CBC_CMD(msg=1, options=option, threads=num_of_process, maxSeconds=time_limit)
         elif solver == 1:
-            solver = pulp.CPLEX_CMD(msg=0, timeLimit=time_limit, options=option, threads=num_of_process)
+            solver = pulp.CPLEX_CMD(msg=1, timeLimit=time_limit, options=option, threads=num_of_process)
         status = problem.solve(solver)
 
         return status, h, v
@@ -653,7 +654,7 @@ class Output(NPB):
         dists.sort(key=lambda x:x[1],reverse=True)
         for v in dists:
             i,d = v
-            print(self.Teams_name[i]+':{}km'.format(d))
+            print(self.Teams_name[i]+' : {}km'.format(d))
 
 #==============================================================================#
 # 結果が正当なものか、簡単に確認するための関数

@@ -30,6 +30,17 @@ def separatelySolve(num_process=1,options=[],time_limit=None,solver=0):
     initial_position = dict()
     sol = ScheduleNPB.Solve()
     leagues = ['p', 's']
+
+    for league in leagues:
+        filename_h = 'r_pre_'+league+'_h.pkl'
+        filename_v = 'r_pre_'+league+'_v.pkl'
+        h,v = Load(filename_h,filename_v)
+        initial_position[league] = sol.FinalPosition(h, v, league, 'r_pre')
+
+    position_for_inter = sol.Merge(initial_position['p'],initial_position['s'])
+    status, h, v = sol.InterLeague(initial_position = position_for_inter, num_of_process=num_process,option=options,time_limit=time_limit,solver=solver)
+    preserve(h,v,'i_ps')
+
     h,v = Load('i_ps_h.pkl','i_ps_v.pkl')
     initial_position['r'] = sol.FinalPosition(h, v, None, 'i')
     for league in leagues:
@@ -115,7 +126,7 @@ def argparser():
         '-sep','--separete',
         help='solve problem separately\n0:solve total problem\n1:solve problems to get regular schedule after inter league',
         default=0,
-        dest='sp',
+        dest='sep',
         type=int
     )
     return parser
