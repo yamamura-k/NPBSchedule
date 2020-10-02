@@ -1,278 +1,30 @@
 
-Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/d42d300d2b5c44edb0e1cce774eb488f-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 15:52:30 2020
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/7590b0228209481295a2bc63bbf5595f-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 18:17:36 2020
 
 
-Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/d42d300d2b5c44edb0e1cce774eb488f-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 15:53:28 2020
-
-Tried aggregator 1 time.
-LP Presolve eliminated 6234 rows and 2484 columns.
-All rows and columns eliminated.
-Presolve time = 0.00 sec. (2.12 ticks)
-
-Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/d42d300d2b5c44edb0e1cce774eb488f-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 15:53:28 2020
-
-Using steepest-edge.
-Parallel mode: deterministic, using up to 2 threads for concurrent optimization:
- * Starting dual Simplex on 1 thread...
- * Starting primal Simplex on 1 thread...
-
-Total time on 2 threads = 0.01 sec. (196.19 ticks)
-
-Dual simplex solved model.
-
-
-Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/d7e4da0ce9794c0ea248ae5f68097fce-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 15:53:30 2020
-
-Advanced basis not built.
-
-Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/d7e4da0ce9794c0ea248ae5f68097fce-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 15:54:28 2020
-
-Tried aggregator 1 time.
-LP Presolve eliminated 6234 rows and 2484 columns.
-All rows and columns eliminated.
-Presolve time = 0.00 sec. (2.12 ticks)
-Parallel mode: deterministic, using up to 2 threads for concurrent optimization:
- * Starting dual Simplex on 1 thread...
- * Starting primal Simplex on 1 thread...
-
-Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/d7e4da0ce9794c0ea248ae5f68097fce-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 15:54:28 2020
-
-Using steepest-edge.
-
-Total time on 2 threads = 0.01 sec. (196.19 ticks)
-
-Dual simplex solved model.
-
-
-Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/b9f2d9a3e6394984a318cfd1aefa35bb-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 15:55:30 2020
-
-Tried aggregator 1 time.
-LP Presolve eliminated 21414 rows and 8028 columns.
-All rows and columns eliminated.
-Presolve time = 0.01 sec. (7.25 ticks)
-Parallel mode: deterministic, using up to 2 threads for concurrent optimization:
- * Starting dual Simplex on 1 thread...
- * Starting primal Simplex on 1 thread...
-
-Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/b9f2d9a3e6394984a318cfd1aefa35bb-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 15:55:30 2020
-
-Using steepest-edge.
-
-Total time on 2 threads = 0.02 sec. (209.42 ticks)
-
-Dual simplex solved model.
-
-
-Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/53aa1a5fa74f4be3af97cbbd88156f6c-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 15:56:31 2020
-
-Tried aggregator 1 time.
-LP Presolve eliminated 21414 rows and 8028 columns.
-All rows and columns eliminated.
-Presolve time = 0.01 sec. (7.27 ticks)
-
-Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/53aa1a5fa74f4be3af97cbbd88156f6c-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 15:56:31 2020
-
-Using steepest-edge.
-Parallel mode: deterministic, using up to 2 threads for concurrent optimization:
- * Starting dual Simplex on 1 thread...
- * Starting primal Simplex on 1 thread...
-
-Total time on 2 threads = 0.02 sec. (209.43 ticks)
-
-Dual simplex solved model.
-
-
-Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/c6a0d8d8c67d4033b91b1d83c5db548d-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 16:20:03 2020
-
-
-Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/c6a0d8d8c67d4033b91b1d83c5db548d-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 16:21:01 2020
-
-Tried aggregator 1 time.
-LP Presolve eliminated 6234 rows and 2484 columns.
-All rows and columns eliminated.
-Presolve time = 0.00 sec. (2.12 ticks)
-Parallel mode: deterministic, using up to 2 threads for concurrent optimization:
- * Starting dual Simplex on 1 thread...
- * Starting primal Simplex on 1 thread...
-
-Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/c6a0d8d8c67d4033b91b1d83c5db548d-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 16:21:01 2020
-
-Using steepest-edge.
-
-Total time on 2 threads = 0.01 sec. (196.19 ticks)
-
-Dual simplex solved model.
-
-
-Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/5ca4e944e54548fabe27b9240db2f533-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 16:21:04 2020
-
-
-Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/5ca4e944e54548fabe27b9240db2f533-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 16:22:02 2020
-
-Tried aggregator 1 time.
-LP Presolve eliminated 6234 rows and 2484 columns.
-All rows and columns eliminated.
-Presolve time = 0.00 sec. (2.12 ticks)
-Parallel mode: deterministic, using up to 2 threads for concurrent optimization:
- * Starting dual Simplex on 1 thread...
- * Starting primal Simplex on 1 thread...
-
-Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/5ca4e944e54548fabe27b9240db2f533-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 16:22:02 2020
-
-Using steepest-edge.
-
-Total time on 2 threads = 0.02 sec. (196.19 ticks)
-
-Dual simplex solved model.
-
-
-Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/c7cbeabe4c6b4880aa83810d7e785ef9-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 16:23:03 2020
-
-Tried aggregator 1 time.
-LP Presolve eliminated 21414 rows and 8028 columns.
-All rows and columns eliminated.
-Presolve time = 0.01 sec. (7.25 ticks)
-
-Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/c7cbeabe4c6b4880aa83810d7e785ef9-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 16:23:03 2020
-
-Using steepest-edge.
-Parallel mode: deterministic, using up to 2 threads for concurrent optimization:
- * Starting dual Simplex on 1 thread...
- * Starting primal Simplex on 1 thread...
-
-Total time on 2 threads = 0.02 sec. (209.42 ticks)
-
-Dual simplex solved model.
-
-
-Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/2e9a09e0d8804bc2a199df1a2dec5532-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 16:24:04 2020
-
-Tried aggregator 1 time.
-LP Presolve eliminated 21414 rows and 8028 columns.
-All rows and columns eliminated.
-Presolve time = 0.01 sec. (7.27 ticks)
-Parallel mode: deterministic, using up to 2 threads for concurrent optimization:
- * Starting dual Simplex on 1 thread...
- * Starting primal Simplex on 1 thread...
-
-Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/2e9a09e0d8804bc2a199df1a2dec5532-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 16:24:04 2020
-
-Using steepest-edge.
-
-Total time on 2 threads = 0.02 sec. (209.43 ticks)
-
-Dual simplex solved model.
-
-
-Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/b1f2bdbb9f0c4bd2b3abdc7e20e5e981-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 16:29:46 2020
-
-
-Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/b1f2bdbb9f0c4bd2b3abdc7e20e5e981-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 16:30:44 2020
-
-Tried aggregator 1 time.
-LP Presolve eliminated 6294 rows and 2484 columns.
-All rows and columns eliminated.
-Presolve time = 0.00 sec. (2.15 ticks)
-Parallel mode: deterministic, using up to 2 threads for concurrent optimization:
- * Starting dual Simplex on 1 thread...
- * Starting primal Simplex on 1 thread...
-
-Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/b1f2bdbb9f0c4bd2b3abdc7e20e5e981-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 16:30:44 2020
-
-Using steepest-edge.
-
-Total time on 2 threads = 0.01 sec. (196.25 ticks)
-
-Dual simplex solved model.
-
-
-Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/fae722b57a76462796f116aecff82699-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 16:30:47 2020
-
-Advanced basis not built.
-
-Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/fae722b57a76462796f116aecff82699-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 16:31:45 2020
-
-Tried aggregator 1 time.
-LP Presolve eliminated 6294 rows and 2484 columns.
-All rows and columns eliminated.
-Presolve time = 0.00 sec. (2.15 ticks)
-Parallel mode: deterministic, using up to 2 threads for concurrent optimization:
- * Starting dual Simplex on 1 thread...
- * Starting primal Simplex on 1 thread...
-
-Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/fae722b57a76462796f116aecff82699-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 16:31:45 2020
-
-Using steepest-edge.
-
-Total time on 2 threads = 0.04 sec. (196.25 ticks)
-
-Dual simplex solved model.
-
-
-Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/d1d2b4ca9afb42b4a171ade96b485a0f-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 16:32:46 2020
-
-Tried aggregator 1 time.
-LP Presolve eliminated 21606 rows and 8028 columns.
-All rows and columns eliminated.
-Presolve time = 0.01 sec. (7.33 ticks)
-Parallel mode: deterministic, using up to 2 threads for concurrent optimization:
- * Starting dual Simplex on 1 thread...
- * Starting primal Simplex on 1 thread...
-
-Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/d1d2b4ca9afb42b4a171ade96b485a0f-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 16:32:46 2020
-
-Using steepest-edge.
-
-Total time on 2 threads = 0.02 sec. (209.60 ticks)
-
-Dual simplex solved model.
-
-
-Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/8a1ce1367b9e48f195206d8f2224fbfd-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 16:33:48 2020
-
-Tried aggregator 1 time.
-LP Presolve eliminated 21606 rows and 8028 columns.
-All rows and columns eliminated.
-Presolve time = 0.01 sec. (7.35 ticks)
-
-Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/8a1ce1367b9e48f195206d8f2224fbfd-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 16:33:48 2020
-
-Using steepest-edge.
-Parallel mode: deterministic, using up to 2 threads for concurrent optimization:
- * Starting dual Simplex on 1 thread...
- * Starting primal Simplex on 1 thread...
-
-Total time on 2 threads = 0.02 sec. (209.62 ticks)
-
-Dual simplex solved model.
-
-
-Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/198a3570b2a64ecdabb3e9bd6ca565ed-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 17:10:23 2020
-
-
-Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/198a3570b2a64ecdabb3e9bd6ca565ed-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 17:11:20 2020
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/7590b0228209481295a2bc63bbf5595f-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 18:18:34 2020
 
 Tried aggregator 1 time.
 LP Presolve eliminated 6354 rows and 2484 columns.
 All rows and columns eliminated.
 Presolve time = 0.00 sec. (2.18 ticks)
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/7590b0228209481295a2bc63bbf5595f-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 18:18:34 2020
+
+Using steepest-edge.
 Parallel mode: deterministic, using up to 2 threads for concurrent optimization:
  * Starting dual Simplex on 1 thread...
  * Starting primal Simplex on 1 thread...
-
-Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/198a3570b2a64ecdabb3e9bd6ca565ed-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 17:11:20 2020
-
-Using steepest-edge.
 
 Total time on 2 threads = 0.01 sec. (196.32 ticks)
 
 Dual simplex solved model.
 
 
-Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/66dece38936f43aab7b3d7caa509a6f1-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 17:11:23 2020
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/257144fca1b2455ba0c769c8d800e145-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 18:18:37 2020
 
 
-Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/66dece38936f43aab7b3d7caa509a6f1-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 17:12:21 2020
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/257144fca1b2455ba0c769c8d800e145-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 18:19:35 2020
 
 Tried aggregator 1 time.
 LP Presolve eliminated 6354 rows and 2484 columns.
@@ -282,11 +34,49 @@ Parallel mode: deterministic, using up to 2 threads for concurrent optimization:
  * Starting dual Simplex on 1 thread...
  * Starting primal Simplex on 1 thread...
 
-Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/66dece38936f43aab7b3d7caa509a6f1-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 17:12:21 2020
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/257144fca1b2455ba0c769c8d800e145-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 18:19:35 2020
 
 Using steepest-edge.
 
 Total time on 2 threads = 0.01 sec. (196.32 ticks)
+
+Dual simplex solved model.
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/f3a868c572574f4e85f8c65ec8af10ca-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 18:20:36 2020
+
+Tried aggregator 1 time.
+LP Presolve eliminated 21666 rows and 8028 columns.
+All rows and columns eliminated.
+Presolve time = 0.01 sec. (7.43 ticks)
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/f3a868c572574f4e85f8c65ec8af10ca-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 18:20:36 2020
+
+Using steepest-edge.
+Parallel mode: deterministic, using up to 2 threads for concurrent optimization:
+ * Starting dual Simplex on 1 thread...
+ * Starting primal Simplex on 1 thread...
+
+Total time on 2 threads = 0.02 sec. (209.76 ticks)
+
+Dual simplex solved model.
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/d5ede7c08f5d4a919820d19a50de7faa-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 18:21:37 2020
+
+Tried aggregator 1 time.
+LP Presolve eliminated 21666 rows and 8028 columns.
+All rows and columns eliminated.
+Presolve time = 0.01 sec. (7.44 ticks)
+Parallel mode: deterministic, using up to 2 threads for concurrent optimization:
+ * Starting dual Simplex on 1 thread...
+ * Starting primal Simplex on 1 thread...
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/d5ede7c08f5d4a919820d19a50de7faa-pulp.lp' Clone_1 (V12.10.0.0) Thu Oct  1 18:21:37 2020
+
+Using steepest-edge.
+
+Total time on 2 threads = 0.02 sec. (209.77 ticks)
 
 Dual simplex solved model.
 
