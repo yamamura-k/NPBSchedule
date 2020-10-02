@@ -6,8 +6,7 @@ import datetime
 from argparse import ArgumentParser
 
 """
-5週間解く(セ・パ)->交流戦解く->残りの37週を解く
-目的関数にw=0の項を追加すれば良いだけ
+一応そこそこいい解は得られたので、ひとまずここまでとしておく。
 """
 
 def preserve(h, v, filename):
@@ -59,7 +58,7 @@ def main(num_process=1,options=[],time_limit=None,solver=0):
     output = SchesuleNPB.Output()
     leagues = ['p', 's']
 
-    # Solve(num_process,options,time_limit=time_limit,solver = solver)
+    #Solve(num_process,options,time_limit=time_limit,solver = solver)
     
     for league in leagues:
         filename_h = 'r_pre_'+league+'_h.pkl'
