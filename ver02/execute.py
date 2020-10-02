@@ -42,9 +42,9 @@ def main(num_process=1,options=[],time_limit=None,solver=0):
         filename= 'r_post_'+league+'.pkl'
         e = Load(filename)
         output.getSchedule(e, 'r_post', league=league)
-    #output.getWholeSchedule()
+    output.getWholeSchedule()
     #print(len(output.schedules['all'][0]))
-    output.checkAnswer()
+    #output.checkAnswer()
     
 
 def argparser():

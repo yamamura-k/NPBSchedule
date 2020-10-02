@@ -151,6 +151,11 @@ class Solve(NPB):
                     if i!=j:
                         problem += pulp.lpSum([v[t][i][j]+v[t][j][i]for t in range(s,s+3)]) <= 1
         
+        for s in S[:-2]:
+            for i in I:
+                # ホームでの試合は連続二回まで
+                problem += v[s][i][i]+v[s+1][i][i] <= 2
+        
         if game_type == 'i':
             # 自分のリーグに属するチームとは試合を行わないと言う制約
             I = self.Teams['p']
@@ -158,10 +163,12 @@ class Solve(NPB):
             for s in S:
                 for i in I:
                     for j in I:
-                        problem += v[s][i][j] == 0
+                        if i != j:
+                            problem += v[s][i][j] == 0
                 for i in J:
                     for j in J:
-                        problem += v[s][i][j] == 0
+                        if i != j:
+                            problem += v[s][i][j] == 0
         
         # solverの設定
         # デフォルトは cbc solver
@@ -218,6 +225,7 @@ class Output(NPB):
             for i in I:
                 for j in I:
                     if v[s][i][j].value() == 1:
+                        print(s,i,j)
                         if i != j:
                             self.schedules[game_type][i].append((s,j,'visitor'))
                         else:
