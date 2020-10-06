@@ -48,7 +48,7 @@ def main(args):
         filename_v = 'r_post_'+league+'_v.pkl'
         h,v = Load(filename_h,filename_v)
         output.getschedule(1, h, v, 'r_post', league=league)
-    output.MergeRegularschedule()
+    output.MergeRegularSchedule()
     
     for game in ['r','r_pre','r_post','i']:
         for i in range(12):
@@ -59,8 +59,10 @@ def main(args):
         output.CountGames(i)
 
     if args.d:
-        output.TotalDists()
+        dists = output.TotalDists()
         output.Ranking()
+        for team in range(12):
+            print(dists[team])
 
     if args.s:
         output.GameTables()

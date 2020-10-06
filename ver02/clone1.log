@@ -1,0 +1,378 @@
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/5aeff6cf302d4b6f94a55622a8952d8c-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 10:46:41 2020
+
+Advanced basis not built.
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/5aeff6cf302d4b6f94a55622a8952d8c-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 11:01:39 2020
+
+Tried aggregator 1 time.
+LP Presolve eliminated 6324 rows and 2484 columns.
+All rows and columns eliminated.
+Presolve time = 0.00 sec. (2.14 ticks)
+
+Total time on 1 threads = 0.00 sec. (99.63 ticks)
+
+Dual simplex solved model.
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/3f44b9e1d1164922af9262c78f60a348-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 11:01:41 2020
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/3f44b9e1d1164922af9262c78f60a348-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 11:16:40 2020
+
+Tried aggregator 1 time.
+LP Presolve eliminated 6324 rows and 2484 columns.
+All rows and columns eliminated.
+Presolve time = 0.00 sec. (2.15 ticks)
+
+Total time on 1 threads = 0.00 sec. (99.64 ticks)
+
+Dual simplex solved model.
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/613ca8d8bd8d4988a9346f3632a6940f-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 11:18:47 2020
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/613ca8d8bd8d4988a9346f3632a6940f-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 11:31:41 2020
+
+Tried aggregator 1 time.
+LP Presolve eliminated 21636 rows and 8028 columns.
+All rows and columns eliminated.
+Presolve time = 0.01 sec. (7.30 ticks)
+
+Total time on 1 threads = 0.02 sec. (109.91 ticks)
+
+Dual simplex solved model.
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/0075a9efeff543d69222706386736923-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 11:33:14 2020
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/0075a9efeff543d69222706386736923-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 11:46:43 2020
+
+Tried aggregator 1 time.
+LP Presolve eliminated 21636 rows and 8028 columns.
+All rows and columns eliminated.
+Presolve time = 0.01 sec. (7.32 ticks)
+
+Total time on 1 threads = 0.01 sec. (109.93 ticks)
+
+Dual simplex solved model.
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/5a5e263d8ad34336b74307cb58dca8e5-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 12:43:59 2020
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/5a5e263d8ad34336b74307cb58dca8e5-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 12:53:32 2020
+
+Tried aggregator 1 time.
+LP Presolve eliminated 27648 rows and 11088 columns.
+All rows and columns eliminated.
+Presolve time = 0.02 sec. (9.29 ticks)
+
+Total time on 1 threads = 0.06 sec. (113.92 ticks)
+
+Dual simplex solved model.
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/d22ba5ac077a4d8085f8e7399b497b85-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 17:20:21 2020
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/d22ba5ac077a4d8085f8e7399b497b85-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 17:30:18 2020
+
+Tried aggregator 1 time.
+LP Presolve eliminated 6427 rows and 2484 columns.
+All rows and columns eliminated.
+Presolve time = 0.00 sec. (2.29 ticks)
+
+Total time on 1 threads = 0.00 sec. (99.61 ticks)
+
+Dual simplex solved model.
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/c82ddc1b4ada41f996d8ee14afbb0ca8-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 17:30:21 2020
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/c82ddc1b4ada41f996d8ee14afbb0ca8-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 17:40:19 2020
+
+Tried aggregator 1 time.
+LP Presolve eliminated 6427 rows and 2484 columns.
+All rows and columns eliminated.
+Presolve time = 0.00 sec. (2.29 ticks)
+
+Total time on 1 threads = 0.00 sec. (100.16 ticks)
+
+Dual simplex solved model.
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/6ea11c02ea8047249baef3b0a1e254a6-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 17:40:43 2020
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/6ea11c02ea8047249baef3b0a1e254a6-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 17:50:20 2020
+
+Tried aggregator 1 time.
+LP Presolve eliminated 27685 rows and 11088 columns.
+All rows and columns eliminated.
+Presolve time = 0.01 sec. (9.73 ticks)
+
+Total time on 1 threads = 0.02 sec. (115.82 ticks)
+
+Dual simplex solved model.
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/02f0a097556a41b896921edbd859a2c3-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 17:51:32 2020
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/02f0a097556a41b896921edbd859a2c3-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 18:00:22 2020
+
+Tried aggregator 1 time.
+LP Presolve eliminated 21871 rows and 8028 columns.
+All rows and columns eliminated.
+Presolve time = 0.01 sec. (7.76 ticks)
+
+Total time on 1 threads = 0.01 sec. (111.62 ticks)
+
+Dual simplex solved model.
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/6c1edce6180448bba26f99a05259a787-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 18:08:54 2020
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/6c1edce6180448bba26f99a05259a787-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 18:10:24 2020
+
+Tried aggregator 1 time.
+LP Presolve eliminated 21871 rows and 8028 columns.
+All rows and columns eliminated.
+Presolve time = 0.01 sec. (7.77 ticks)
+
+Total time on 1 threads = 0.02 sec. (111.63 ticks)
+
+Dual simplex solved model.
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/3c6083ac8dbf425fa8097f5c6ee7b993-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 18:55:37 2020
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/3c6083ac8dbf425fa8097f5c6ee7b993-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 19:03:04 2020
+
+Tried aggregator 1 time.
+LP Presolve eliminated 6385 rows and 2484 columns.
+All rows and columns eliminated.
+Presolve time = 0.00 sec. (2.27 ticks)
+
+Total time on 1 threads = 0.00 sec. (100.13 ticks)
+
+Dual simplex solved model.
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/d33b6fbb342a421b8e3e6b83acac7133-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 19:03:07 2020
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/d33b6fbb342a421b8e3e6b83acac7133-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 19:10:34 2020
+
+Tried aggregator 1 time.
+LP Presolve eliminated 6385 rows and 2484 columns.
+All rows and columns eliminated.
+Presolve time = 0.00 sec. (2.28 ticks)
+
+Total time on 1 threads = 0.00 sec. (99.59 ticks)
+
+Dual simplex solved model.
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/0b2623bed43145988a1519955488a385-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 19:10:59 2020
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/0b2623bed43145988a1519955488a385-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 19:18:06 2020
+
+Tried aggregator 1 time.
+LP Presolve eliminated 27649 rows and 11088 columns.
+All rows and columns eliminated.
+Presolve time = 0.01 sec. (9.72 ticks)
+
+Total time on 1 threads = 0.02 sec. (115.79 ticks)
+
+Dual simplex solved model.
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/23e9ac4aec0e4e909f841863b9e42185-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 19:20:47 2020
+
+Advanced basis not built.
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/23e9ac4aec0e4e909f841863b9e42185-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 19:25:38 2020
+
+Tried aggregator 1 time.
+LP Presolve eliminated 21697 rows and 8028 columns.
+All rows and columns eliminated.
+Presolve time = 0.01 sec. (7.70 ticks)
+
+Total time on 1 threads = 0.02 sec. (111.50 ticks)
+
+Dual simplex solved model.
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/c5666eb4fb5b4b75b859b9a07123b2ab-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 19:33:29 2020
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/c5666eb4fb5b4b75b859b9a07123b2ab-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 19:40:56 2020
+
+Tried aggregator 1 time.
+LP Presolve eliminated 6385 rows and 2484 columns.
+All rows and columns eliminated.
+Presolve time = 0.00 sec. (2.27 ticks)
+
+Total time on 1 threads = 0.00 sec. (100.13 ticks)
+
+Dual simplex solved model.
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/09b555b627ba49308717c79bb837d71f-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 19:40:59 2020
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/09b555b627ba49308717c79bb837d71f-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 19:48:26 2020
+
+Tried aggregator 1 time.
+LP Presolve eliminated 6385 rows and 2484 columns.
+All rows and columns eliminated.
+Presolve time = 0.00 sec. (2.28 ticks)
+
+Total time on 1 threads = 0.00 sec. (100.13 ticks)
+
+Dual simplex solved model.
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/e93f1e084ced470094e3831e0f246791-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 19:48:49 2020
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/e93f1e084ced470094e3831e0f246791-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 19:55:58 2020
+
+Tried aggregator 1 time.
+LP Presolve eliminated 27649 rows and 11088 columns.
+All rows and columns eliminated.
+Presolve time = 0.01 sec. (9.72 ticks)
+
+Total time on 1 threads = 0.02 sec. (115.79 ticks)
+
+Dual simplex solved model.
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/392644e08ca747c994ad9b6d59267208-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 19:58:55 2020
+
+Advanced basis not built.
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/392644e08ca747c994ad9b6d59267208-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 20:03:29 2020
+
+Tried aggregator 1 time.
+LP Presolve eliminated 21697 rows and 8028 columns.
+All rows and columns eliminated.
+Presolve time = 0.01 sec. (7.70 ticks)
+
+Total time on 1 threads = 0.01 sec. (111.50 ticks)
+
+Dual simplex solved model.
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/e226d5b8039a47a884d209f82862cd28-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 20:09:33 2020
+
+Advanced basis not built.
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/e226d5b8039a47a884d209f82862cd28-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 20:11:01 2020
+
+Tried aggregator 1 time.
+LP Presolve eliminated 21697 rows and 8028 columns.
+All rows and columns eliminated.
+Presolve time = 0.01 sec. (7.72 ticks)
+
+Total time on 1 threads = 0.01 sec. (111.51 ticks)
+
+Dual simplex solved model.
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/ac4a4f98837f44ffbbb9bb65e1f1aaa7-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 20:19:14 2020
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/49f6123ac9f44970a8cae6b5038b61d0-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 20:33:28 2020
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/7a784d4bd7f4430c8814158e783e10c7-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 20:34:15 2020
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/9465ca6ff85c4238a6339dbda8f666cf-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 20:49:42 2020
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/d09544765e724e01ae71990eda6239cd-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 21:03:20 2020
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/d09544765e724e01ae71990eda6239cd-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 21:10:48 2020
+
+Tried aggregator 1 time.
+LP Presolve eliminated 6433 rows and 2484 columns.
+All rows and columns eliminated.
+Presolve time = 0.00 sec. (2.29 ticks)
+
+Total time on 1 threads = 0.00 sec. (100.16 ticks)
+
+Dual simplex solved model.
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/dd67628e919546139c40d144cc83700b-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 21:10:50 2020
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/dd67628e919546139c40d144cc83700b-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 21:18:19 2020
+
+Tried aggregator 1 time.
+LP Presolve eliminated 6433 rows and 2484 columns.
+All rows and columns eliminated.
+Presolve time = 0.00 sec. (2.29 ticks)
+
+Total time on 1 threads = 0.00 sec. (100.16 ticks)
+
+Dual simplex solved model.
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/0d2d798698164158af0ff526ba4b4bbc-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 21:18:50 2020
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/0d2d798698164158af0ff526ba4b4bbc-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 21:25:50 2020
+
+Tried aggregator 1 time.
+LP Presolve eliminated 27697 rows and 11088 columns.
+All rows and columns eliminated.
+Presolve time = 0.01 sec. (9.73 ticks)
+
+Total time on 1 threads = 0.02 sec. (115.82 ticks)
+
+Dual simplex solved model.
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/31f0e45839ca48c488eaac35700f029c-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 21:32:45 2020
+
+Advanced basis not built.
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/31f0e45839ca48c488eaac35700f029c-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 21:33:21 2020
+
+Tried aggregator 1 time.
+LP Presolve eliminated 21877 rows and 8028 columns.
+All rows and columns eliminated.
+Presolve time = 0.01 sec. (7.75 ticks)
+
+Total time on 1 threads = 0.01 sec. (111.61 ticks)
+
+Dual simplex solved model.
+
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/194bfb09bae7452b9e85e896a55b18c9-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 21:39:35 2020
+
+Advanced basis not built.
+
+Log for '/var/folders/wb/6pm8s60x797b47qg789x82sc0000gn/T/194bfb09bae7452b9e85e896a55b18c9-pulp.lp' Clone_1 (V12.10.0.0) Sat Oct  3 21:40:52 2020
+
+Tried aggregator 1 time.
+LP Presolve eliminated 21877 rows and 8028 columns.
+All rows and columns eliminated.
+Presolve time = 0.01 sec. (7.77 ticks)
+
+Total time on 1 threads = 0.01 sec. (111.63 ticks)
+
+Dual simplex solved model.
+

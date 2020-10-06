@@ -72,7 +72,7 @@ class Solve(NPB):
         super().__init__()
         self.DistMatrix()
 
-    def RegularGame(self, league, type, initial_position=None, num_of_process=1, option=[], time_limit=3600, solver=0):
+    def RegularGame(self, league, type, initial_position=None, num_of_process=1, option=[], time_limit=3600, solver=0, bestObj=2**30):
         """
         league           : 'p'/'s'.
         type             : 'r_pre'/'r_post'. (交流戦前/交流戦後)
@@ -109,6 +109,7 @@ class Solve(NPB):
         problem += obj
         
         # set constraints
+        problem += obj <= bestObj
         for i in I:
             # 総試合数に関する制約
             problem += pulp.lpSum([h[0][i][j][w]+v[0][i][j][w]+h[1][i][j][w]+v[1][i][j][w] for j in I for w in W]) == self.total_game[type]
@@ -173,7 +174,15 @@ class Solve(NPB):
                     if i != j:
                         #同じ対戦カードは一週間に一回以下である、という制約
                         problem += (h[0][i][j][w]+v[0][i][j][w]+h[1][i][j][w-1]+v[1][i][j][w-1] <= 1) 
-                   
+        
+        for i in I:
+            for w in W:
+                # ホーム連戦は三回以下
+                if w <= W[-2]:
+                    problem += pulp.lpSum([h[0][i][j][w]+h[1][i][j][w]+h[0][i][j][w+1]+h[1][i][j][w+1]for j in I]) <= 3
+                    if w >= 1:
+                        problem += pulp.lpSum([h[0][i][j][w]+h[1][i][j][w]+h[0][i][j][w+1]+h[1][i][j][w-1]for j in I]) <= 3
+
 
         total = dict()
         for i in I:
@@ -213,10 +222,10 @@ class Solve(NPB):
             solver = pulp.CPLEX_CMD(msg=1, timeLimit=time_limit, options=option, threads=num_of_process)
         status = problem.solve(solver)
 
-        return status, h, v
+        return status, pulp.value(problem.objective), h, v
 
 
-    def InterLeague(self, initial_position=None, num_of_process=1, option=[], time_limit=3600, solver=0):
+    def InterLeague(self, initial_position=None, num_of_process=1, option=[], time_limit=3600, solver=0, bestObj=2**30):
         """
         initial_position : 直前に試合を行なった球場を表現するリスト(1x12).
         num_of_process   : 問題を解くさいの並列数
@@ -251,6 +260,7 @@ class Solve(NPB):
         problem += obj
 
         # set constraints
+        problem += obj <= bestObj
         # 自リーグとは試合をしない
         for d in [0,1]:
             for w in W_I:
@@ -369,7 +379,7 @@ class Solve(NPB):
             solver = pulp.CPLEX_CMD(msg=1, timeLimit=time_limit, options=option, threads=num_of_process)
         status = problem.solve(solver)
 
-        return status, h, v
+        return status, pulp.value(problem.objective), h, v
 
 
     def FinalPosition(self, h, v, league, type):
@@ -471,7 +481,7 @@ class Output(NPB):
                                 self.schedules[game_type][j].append((w,day,i,'HOME'))
                 self.schedules[game_type][j].sort()
 
-    def MergeRegularschedule(self):
+    def MergeRegularSchedule(self):
         """
         交流戦前後のスケジュールを一つのリストにmergeする関数
         """

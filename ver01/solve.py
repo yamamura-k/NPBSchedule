@@ -3,29 +3,45 @@ from utils.utils import preserve, Load
 
 from argparse import ArgumentParser
 
-"""
-一応そこそこいい解は得られたので、ひとまずここまでとしておく。
-"""
 
 def Solve(num_process=1,options=[],time_limit=None,solver=0):
     initial_position = dict()
     sol = ScheduleNPB.Solve()
     leagues = ['p', 's']
-
-    for league in leagues:
-        status, h, v = sol.RegularGame(league,"r_pre",num_of_process=num_process,option=options,time_limit=time_limit,solver=solver)
-        initial_position[league] = sol.FinalPosition(h, v, league, 'r_pre')
-        preserve(h,v,'r_pre_'+league)
-
-    position_for_inter = sol.Merge(initial_position['p'],initial_position['s'])
-    status, h, v = sol.InterLeague(initial_position = position_for_inter, num_of_process=num_process,option=options,time_limit=time_limit,solver=solver)
-    preserve(h,v,'i_ps')
-
-    initial_position['r'] = sol.FinalPosition(h, v, None, 'i')
-    for league in leagues:
-        status, h, v = sol.RegularGame(league,"r_post",initial_position=initial_position['r'],num_of_process=num_process,option=options,time_limit=time_limit,solver=solver)
-        preserve(h,v,'r_post_'+league)    
-    
+    with open('bestObjective.txt', 'r') as f:
+        best = [float(s.strip()) for s in f.readlines()]
+        index = 0
+        for league in leagues:
+            status, obj, h, v = sol.RegularGame(league,"r_pre",num_of_process=num_process,option=options,time_limit=time_limit,solver=solver,bestObj=best[index])
+            if status==1:
+                preserve(h,v,'r_pre_'+league)
+                best[index] = min(best[index],float(obj))
+            index += 1
+            filename_h = 'r_pre_'+league+'_h.pkl'
+            filename_v = 'r_pre_'+league+'_v.pkl'
+            h,v = Load(filename_h,filename_v)
+            initial_position[league] = sol.FinalPosition(h, v, league, 'r_pre')
+   
+        position_for_inter = sol.Merge(initial_position['p'],initial_position['s'])
+        status, obj, h, v = sol.InterLeague(initial_position = position_for_inter, num_of_process=num_process,option=options,time_limit=time_limit,solver=solver,bestObj=best[index])
+        if status==1:
+            preserve(h,v,'i_ps')
+            best[index] = min(best[index],float(obj))
+        index += 1
+        
+        h,v = Load('i_ps_h.pkl','i_ps_v.pkl')
+        initial_position['r'] = sol.FinalPosition(h, v, None, 'i')
+        for league in leagues:
+            status, obj, h, v = sol.RegularGame(league,"r_post",initial_position=initial_position['r'],num_of_process=num_process,option=options,time_limit=time_limit,solver=solver,bestObj=best[index])    
+            if status==1:
+                preserve(h,v,'r_post_'+league)
+                best[index] = min(best[index],float(obj))
+            index += 1
+    f = open('bestObjective.txt', 'w')
+    best = list(map(lambda x: str(x)+'\n', best))
+    f.writelines(best)
+    f.close()
+             
 def separatelySolve(num_process=1,options=[],time_limit=None,solver=0):
     initial_position = dict()
     sol = ScheduleNPB.Solve()
@@ -68,7 +84,7 @@ def debug(num_process=1,options=[],time_limit=None,solver=0):
         h,v = Load(filename_h,filename_v)
         output.getschedule(1, h, v, 'r_post', league=league)
 
-    output.MergeRegularschedule()
+    output.MergeRegularSchedule()
     
     for game in ['r','r_pre','r_post','i']:
         for i in range(12):

@@ -31,12 +31,12 @@ class NPB():
                             6:'東京ドーム', 7:'名古屋ドーム', 8:'神宮球場', 9:'甲子園',10:'MAZDA',11:'横浜スタジアム'}
         self.Teams["p"]  = [x for x in range(6)]
         self.Teams["s"]  = [x for x in range(6,12)]
-        self.K         = self.Teams['p']+self.Teams['s']
+        self.K           = self.Teams['p']+self.Teams['s']
 
-        self.S['r']      = [w for w in range(42)]
-        self.S["r_pre"]  = [w for w in range(10)]
-        self.S["r_post"] = [w for w in range(32)]
-        self.S["i"]      = [0,1,2]
+        self.S['r']      = [s for s in range(42)]
+        self.S["r_pre"]  = [s for s in range(10)]
+        self.S["r_post"] = [s for s in range(32)]
+        self.S["i"]      = [s for s in range(6)]
 
         self.total_game['r']      = 42
         self.total_game['r_pre']  = 10
@@ -77,9 +77,8 @@ class Solve(NPB):
     def __init__(self) -> None:
         super().__init__()
 
-    def Solve(self, game_type, league='p', timeLimit=None, solverName=None, threads=1, option=[], initialPosition=None):
+    def Solve(self, game_type, league='p', timeLimit=None, solverName=None, threads=1, option=[], initialPosition=None, bestObj=2**30):
         """
-        交流戦の定式化はまた考えた方が良いかも。
         """
         # 定数
         I = self.Teams[league]
@@ -91,7 +90,6 @@ class Solve(NPB):
 
         # 問題の宣言
         problem = pulp.LpProblem('scheduling', pulp.LpMinimize)
-
         # 変数の生成
         v = pulp.LpVariable.dicts('v',(S,I,I),0,1,'Integer')
         e = pulp.LpVariable.dicts('e',(S,I,I,I),0,1,'Integer')
@@ -104,11 +102,15 @@ class Solve(NPB):
         problem += obj
 
         # 制約式を入れる
+
+        # 目的関数値が改善された時だけ答えを出力してもらう。
+        problem += obj <= bestObj
+
         for i in I:
             for j in I:
                 for k in I:
                     for s in S[1:]:
-                        # e[s][i][j][kが定義を満たすように制約を入れる
+                        # e[s][i][j][k]が定義を満たすように制約を入れる
                         problem += 1-v[s-1][i][j]-v[s][i][k]+e[s][i][j][k] >= 0
                         problem += v[s-1][i][j]-e[s][i][j][k] >= 0
                         problem += v[s][i][k]-e[s][i][j][k] >= 0
@@ -116,12 +118,13 @@ class Solve(NPB):
             for i in I:
                 # 垂直に足して見てね！
                 problem += pulp.lpSum([v[s][j][i] for j in I])<=2
-
+            
         for i in I:
             J = list(set(I)-{i})
             for s in S:
                 # v[s][i][i]の決め方。パワポで言う制約①
                 problem += v[s][i][i] - pulp.lpSum([v[s][j][i] for j in J]) == 0
+
         
         for i in I:
             J = list(set(I)-{i})
@@ -134,7 +137,7 @@ class Solve(NPB):
         for i in I:
             for j in I:
                 # 各対戦カードにおけるホームとビジターの試合数をなるべく揃える。パワポで言う制約④
-                if i < j:
+                if i != j:
                     problem += pulp.lpSum([v[s][i][j] for s in S])-pulp.lpSum([v[s][j][i] for s in S]) <= 1
                     problem += pulp.lpSum([v[s][i][j] for s in S])-pulp.lpSum([v[s][j][i] for s in S]) >= -1
                     problem += pulp.lpSum([v[s][i][j] for s in S]) <= self.ub[game_type]
@@ -151,6 +154,11 @@ class Solve(NPB):
                     # 連戦はしない。パワポで言う制約⑥
                     if i!=j:
                         problem += pulp.lpSum([v[t][i][j]+v[t][j][i]for t in range(s,s+3)]) <= 1
+        
+        for s in S[:-2]:
+            for i in I:
+                # ホームは連続二連ちゃんまで
+                problem += pulp.lpSum([v[t][i][i]for t in range(s,s+3)]) <= 2
         
         if game_type == 'i':
             # 自分のリーグに属するチームとは試合を行わないと言う制約
@@ -172,8 +180,7 @@ class Solve(NPB):
                     problem += v[s][i][i]+pulp.lpSum([v[s][i][j]for j in J]) <= 1
                 for j in J:
                     problem += v[s][j][j]+pulp.lpSum([v[s][j][i]for i in L]) <= 1
-                       
-        
+
         # solverの設定
         # デフォルトは cbc solver
         if solverName == 0:
@@ -183,7 +190,7 @@ class Solve(NPB):
         
         status = problem.solve(solver)
 
-        return status, v
+        return status, pulp.value(problem.objective), v
 
     def FinalPosition(self, e, league, type):
         """
@@ -226,17 +233,13 @@ class Output(NPB):
         I = self.Teams[league]
         if game_type == 'i':
             I = self.K
-        for i in I:
-            for j in I:
-                for s in self.S[game_type]:
+        for s in self.S[game_type]:
+            for i in I:
+                for j in I:
                     if v[s][i][j].value() == 1:
                         if i != j:
                             self.schedules[game_type][i].append((s,j,'visitor'))
-                        else:
-                            self.schedules[game_type][i].append((s,-1,'home'))
-
-            self.schedules[game_type][i].sort()
-            print(len(self.schedules[game_type][i]))
+                            self.schedules[game_type][j].append((s,i,'home'))
 
     def getWholeSchedule(self):
         for i in self.K:
@@ -273,7 +276,7 @@ class Output(NPB):
 #======================================================================#
 # 結果表示用。        
 
-    def MergeRegularschedule(self):
+    def MergeRegularSchedule(self):
         """
         交流戦前後のスケジュールを一つのリストにmergeする関数
         """
@@ -285,51 +288,6 @@ class Output(NPB):
                 schedule[i] = self.schedules['r_pre'][i]+self.schedules['r_post'][i]
         
  
-    def GamePerDay(self, w, d, league, game_type='r'):
-        """
-        週と曜日を指定した際に行われる試合を出力する関数。
-        w         : 週
-        d         : 曜日
-        league    : 考えるリーグ
-        game_type : 通常/交流戦
-        """
-        pycolor = color.pycolor
-        schedule = self.schedules[game_type]
-        if game_type == 'r':
-            I = self.Teams[league]
-            for i in I:
-                for k in range(len(schedule[i])):
-                    if schedule[i][k][0] == w and schedule[i][k][1]==d and schedule[i][k][-1] == 'HOME':
-                        place = self.Teams_name[i]
-                        print(self.stadium[i])
-                        print(pycolor.GREEN+self.Teams_name[i]+pycolor.END+":"+pycolor.PURPLE+self.Teams_name[schedule[i][k][2]]+pycolor.END)
-                    
-        else:
-            I = self.Teams['p']
-            J = self.Teams['s']
-            for i in I:
-                for k in range(len(schedule[i])):
-                    if schedule[i][k][0] == w and schedule[i][k][1]==d and schedule[i][k][-1] == 'HOME':
-                        place = self.Teams_name[i]
-                        print(self.stadium[i])
-                        print(pycolor.GREEN+self.Teams_name[i]+pycolor.END+":"+pycolor.PURPLE+self.Teams_name[schedule[i][k][2]]+pycolor.END)
-            for i in J:
-                for k in range(len(schedule[i])):
-                    if schedule[i][k][0] == w and schedule[i][k][1]==d and schedule[i][k][-1] == 'HOME':
-                        place = self.Teams_name[i]
-                        print(self.stadium[i])
-                        print(pycolor.GREEN+self.Teams_name[i]+pycolor.END+":"+pycolor.PURPLE+self.Teams_name[schedule[i][k][2]]+pycolor.END)
-
-    def Gameschedule(self):
-        """
-        一年間のスケジュールを通常->交流戦の順番で日付順に出力する関数。
-        """
-        for game_type in ['r','i']:
-            for w in self.W[game_type]:
-                for d in [0,1]:
-                    for league in ['p','s']:
-                        self.GamePerDay(w,d,league,game_type=game_type)
-
     def GameTable(self, i):
         """
         チームiの一年間のスケジュールを出力する関数
@@ -350,15 +308,11 @@ class Output(NPB):
                 continue
 
             for o in self.schedules[game_type][i]:
-                if o[1] == 0:
-                    day='(火)'
-                else:
-                    day = '(金)'
-                if o[-1] == "HOME":
-                    print(str(o[0]+1)+pycolor.GREEN+self.Teams_name[o[2]]+pycolor.END+day)
+                if o[-1] == "home":
+                    print(str(o[0]+1)+pycolor.GREEN+self.Teams_name[o[-2]]+pycolor.END)
                     h += 1
                 else:
-                    print(str(o[0]+1)+pycolor.PURPLE+self.Teams_name[o[2]]+pycolor.END+day)
+                    print(str(o[0]+1)+pycolor.PURPLE+self.Teams_name[o[-2]]+pycolor.END)
                     v += 1
 
             print("home:{}\nvisitor:{}".format(h,v))
@@ -382,24 +336,24 @@ class Output(NPB):
         schedule_i = self.schedules['i'][team]
 
         if type == 1:
-            if schedule_i[0][-1] == 'HOME':
+            if schedule_i[0][-1] == 'home':
                 cur_stadium = team
             else:
-                cur_stadium = schedule_i[0][2]
-            if schedule_r[9][-1] == 'HOME':
+                cur_stadium = schedule_i[0][-2]
+            if schedule_r[9][-1] == 'home':
                 post_stadium = team
             else:
-                post_stadium = schedule_r[9][2]
+                post_stadium = schedule_r[9][-2]
         
         else:
-            if schedule_i[-1][-1] == 'HOME':
+            if schedule_i[-1][-1] == 'home':
                 cur_stadium = team
             else:
-                cur_stadium = schedule_i[-1][2]
-            if schedule_r[10][-1] == 'HOME':
+                cur_stadium = schedule_i[-1][-2]
+            if schedule_r[10][-1] == 'home':
                 post_stadium = team
             else:
-                post_stadium = schedule_r[10][2]  
+                post_stadium = schedule_r[10][-2]  
 
         return self.D[post_stadium][cur_stadium]                
 
@@ -414,16 +368,16 @@ class Output(NPB):
 
         for game_type in ['r','i']:
             schedule = self.schedules[game_type][team]
-            if schedule[0][-1] == 'HOME':
+            if schedule[0][-1] == 'home':
                 post_stadium = team
             else:
-                post_stadium = schedule[0][2]
+                post_stadium = schedule[0][-2]
 
             for t in range(1, len(schedule)):
-                if schedule[t][-1] == 'HOME':
+                if schedule[t][-1] == 'home':
                     cur_stadium = team
                 else:
-                    cur_stadium = schedule[t][2]
+                    cur_stadium = schedule[t][-2]
                 total_dist += D[post_stadium][cur_stadium]
                 post_stadium = cur_stadium
         total_dist += self.CalcDist(team,1)+self.CalcDist(team,0)
@@ -464,13 +418,13 @@ class Output(NPB):
         for v in schedule_i:
             j = v[-2]
             if j in game_number_i.keys():
-                if v[-1] == 'HOME':
+                if v[-1] == 'home':
                     game_number_i[j][0] += 1
                 else:
                     game_number_i[j][1] += 1
             else:
                 game_number_i[j] = [0,0]
-                if v[-1] == 'HOME':
+                if v[-1] == 'home':
                     game_number_i[j][0] += 1
                 else:
                     game_number_i[j][1] += 1
@@ -478,13 +432,13 @@ class Output(NPB):
         for v in schedule_r:
             j = v[-2]
             if j in game_number_r.keys():
-                if v[-1] == 'HOME':
+                if v[-1] == 'home':
                     game_number_r[j][0] += 1
                 else:
                     game_number_r[j][1] += 1
             else:
                 game_number_r[j] = [0,0]
-                if v[-1] == 'HOME':
+                if v[-1] == 'home':
                     game_number_r[j][0] += 1
                 else:
                     game_number_r[j][1] += 1
@@ -502,30 +456,101 @@ class Output(NPB):
         """
         total_game = self.total_game[game_type]
         schedule = self.schedules[game_type]
+        
         route_x = []
         route_y = []
-        fig, axes= plt.subplots(3, 2)
+        
+        if game_type=='r':
+            I = self.Teams[league]
+            fig, axes = plt.subplots(3, 2)
+            row_max   = 1
+        else:
+            I = self.Teams['p']+self.Teams['s']
+            fig, axes = plt.subplots(6, 2)
+            row_max   = 4
+            league    = 'all'
+        plt.subplots_adjust(wspace=0.4, hspace=0.6)
+
         row = col = 0
-        for team in self.Teams[league]:
+
+        for team in I:
             for k in range(total_game):
-                _, _, j, stadium = schedule[team][k]
-                if stadium == 'VISITOR':
+                if k >= len(schedule[team]):
+                    break
+                _, j, stadium = schedule[team][k]
+                if stadium == 'visitor':
                     route_x.append(self.coordinates[j][1])
                     route_y.append(self.coordinates[j][0])
                 else:
                     route_x.append(self.coordinates[team][1])
                     route_y.append(self.coordinates[team][0])
-            axes[row, col].plot(route_x, route_y, 'o-')
+            axes[row, col].plot([self.coordinates[i][1]for i in range(6)],
+                                [self.coordinates[i][0]for i in range(6)],'bo')
+
+            axes[row, col].plot([self.coordinates[i][1]for i in range(6,12)],
+                                [self.coordinates[i][0]for i in range(6,12)],'go')
+
+            axes[row, col].plot(route_x, route_y, 'r-')
             axes[row,col].set_title(self.Teams_name[team])
-            if row <= 1:
+            if row <= row_max:
                 row += 1
             elif col <= 0:
                 col += 1
                 row = 0
             route_x = []
             route_y = []
-        save_dir = "./result/"
+        save_dir = "./result/png"
         plt.savefig(os.path.join(save_dir,'{}_{}.png'.format(game_type,league)))
+        plt.close()
+
+    def plotOnMap(self, team, game_type):
+        """
+        移動経路を日本地図上にプロットする関数
+        """
+        # 定数の設定
+        total_game = self.total_game[game_type]
+        schedule = self.schedules[game_type][team]
+        route_x = []
+        route_y = []    
+        from mpl_toolkits.basemap import Basemap
+        # 地図の描画
+        fig = plt.figure()
+        m = Basemap(projection='lcc', lat_0 = 35.4, lon_0 = 136.7,
+                    resolution = 'i', area_thresh = 0.1,
+                    llcrnrlon=128., llcrnrlat=30.,
+                    urcrnrlon=147., urcrnrlat=46.)
+        # 各チームの本拠地をプロット
+        # パ・リーグ
+        x,y = m([self.coordinates[i][1]for i in range(6)],
+                [self.coordinates[i][0]for i in range(6)])
+        m.plot(x,y,'bo',markersize=5)
+        # セ・リーグ
+        x,y = m([self.coordinates[i][1]for i in range(6,12)],
+                [self.coordinates[i][0]for i in range(6,12)]) 
+        m.plot(x,y,'go',markersize=5)
+        # 移動経路を求める
+        for k in range(total_game):
+            if k >= len(schedule):
+                break
+            _, j, stadium = schedule[k]
+            if stadium == 'visitor':
+                route_x.append(self.coordinates[j][1])
+                route_y.append(self.coordinates[j][0])
+            else:
+                route_x.append(self.coordinates[team][1])
+                route_y.append(self.coordinates[team][0])
+        route_x,route_y = m(route_x, route_y)  
+        # 移動経路の描画
+        m.plot(route_x, route_y, 'r-')
+        # 海岸線を描く、国境を塗る、海(背景)を塗る, 大陸を塗る
+        m.drawcoastlines(linewidth=0.25)
+        m.drawcountries(linewidth=0.25)
+        m.drawmapboundary(fill_color='skyblue')
+        m.fillcontinents(color='bisque',lake_color='skyblue')
+        # 画像を保存
+        save_dir = "./result/png"
+        plt.savefig(os.path.join(save_dir,'{}_{}.png'.format(game_type,team)))
+        plt.close()
 
     def Visualize(self):
         """
@@ -534,3 +559,6 @@ class Output(NPB):
         for game_type in ['r','i']:
             for league in ['p','s']:
                 self.Plot(game_type,league)
+        for game_type in ['r','i']:
+            for team in range(12):
+                self.plotOnMap(team, game_type)

@@ -20,7 +20,7 @@ def main(num_process=1,options=[],time_limit=None,solver=0):
         h,v = Load(filename_h,filename_v)
         output.getschedule(1, h, v, 'r_post', league=league)
 
-    output.MergeRegularschedule()
+    output.MergeRegularSchedule()
     
     output.Visualize()
 

@@ -3,26 +3,44 @@ from utils.utils import Load, preserve
 
 from argparse import ArgumentParser
 
-
 def Solve(num_process=1,options=[],time_limit=None,solver=0,option=[]):
-    initial_position = dict()
-    sol = ScheduleNPB.Solve()
-    leagues = ['p', 's']
+    with open('bestObjective.txt', 'r+') as f:
+        best = [float(s.strip()) for s in f.readlines()]
+        initial_position = dict()
+        sol = ScheduleNPB.Solve()
+        leagues = ['p', 's']
+        index = 0
 
-    for league in leagues:
-        status, e = sol.Solve("r_pre",league=league,threads=num_process,timeLimit=time_limit,solverName=solver,option=options)
-        initial_position[league] = sol.FinalPosition(e, league, 'r_pre')
-        preserve(e,'r_pre_'+league)
+        for league in leagues:
+            status, obj, e = sol.Solve("r_pre",league=league,threads=num_process,timeLimit=time_limit,solverName=solver,option=options,bestObj=best[index])
+            if status==1:
+                preserve(e,'r_pre_'+league)
+                best[index] = min(best[index], float(obj))
+            index += 1
+            e = Load('r_pre_'+league+'.pkl')
+            initial_position[league] = sol.FinalPosition(e, league, 'r_pre')
 
-    position_for_inter = sol.Merge(initial_position['p'],initial_position['s'])
-    status, e = sol.Solve('i', initialPosition = position_for_inter, threads=num_process,timeLimit=time_limit,solverName=solver,option=options)
-    preserve(e,'i_ps')
+        position_for_inter = sol.Merge(initial_position['p'],initial_position['s'])
+        status, obj, e = sol.Solve('i', initialPosition = position_for_inter, threads=num_process,timeLimit=time_limit,solverName=solver,option=options,bestObj=best[index])
+        if status==1:
+            preserve(e,'i_ps')
+            best[index] = min(best[index], float(obj))
+        index += 1
+        e = Load('i_ps.pkl')
+        initial_position['r'] = sol.FinalPosition(e, None, 'i')
+        
+        for league in leagues:
+            status, obj, e = sol.Solve("r_post",league=league,initialPosition=initial_position['r'],threads=num_process,timeLimit=time_limit,solverName=solver,option=options,bestObj=best[index])
+            if status==1:
+                preserve(e,'r_post_'+league)     
+                best[index] = min(best[index], float(obj))
+            index += 1
 
-    initial_position['r'] = sol.FinalPosition(e, None, 'i')
-    for league in leagues:
-        status, e = sol.Solve("r_post",league=league,initialPosition=initial_position['r'],threads=num_process,timeLimit=time_limit,solverName=solver,option=options)
-        preserve(e,'r_post_'+league)     
-
+    f = open('bestObjective.txt', 'w')
+    best = list(map(lambda x: str(x)+'\n', best))
+    f.writelines(best)
+    f.close()
+        
 def partSolve(num_process=1,options=[],time_limit=None,solver=0,option=[]):
     initial_position = dict()
     sol = ScheduleNPB.Solve()
@@ -31,7 +49,6 @@ def partSolve(num_process=1,options=[],time_limit=None,solver=0,option=[]):
     for league in leagues:
         e = Load('r_pre_'+league+'.pkl')
         initial_position[league] = sol.FinalPosition(e, league, 'r_pre')
-        preserve(e,'r_pre_'+league)
 
     position_for_inter = sol.Merge(initial_position['p'],initial_position['s'])
     status, e = sol.Solve('i', initialPosition = position_for_inter, threads=num_process,timeLimit=time_limit,solverName=solver,option=options)
@@ -57,8 +74,13 @@ def main(num_process=1,options=[],time_limit=None,solver=0):
         output.getSchedule(e, 'r_post', league=league)
     #output.getWholeSchedule()
     print(len(output.schedules['all'][0]))
-    output.checkAnswer()
-    
+    output.MergeRegularSchedule()
+    #output.checkAnswer()
+    dists = output.TotalDists()
+    for team in range(12):
+        print(dists[team])
+    output.GameTables()
+    #output.Visualize()
 
 def argparser():
     parser = ArgumentParser()
@@ -95,6 +117,14 @@ def argparser():
         type=int
     )
 
+    parser.add_argument(
+        '-par','--part',
+        help='partly solve',
+        default=False,
+        dest='part',
+        type=bool
+    )
+
     return parser
 
 
@@ -110,8 +140,8 @@ if __name__ == "__main__":
 
     if args.dbg:
         dbg_option = ['maxsol 1']
-        partSolve(num_process=num_process,options=dbg_option,time_limit=limit,solver=solver)
-        exit()
+        #partSolve(num_process=num_process,options=dbg_option,time_limit=limit,solver=solver)
+        #exit()
         main(num_process=num_process,options=dbg_option,time_limit=limit,solver=solver)
     else: 
         main(num_process=num_process,time_limit=limit,solver=solver)
