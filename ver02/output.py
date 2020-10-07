@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import ScheduleNPB
 from utils.utils import Load
 
