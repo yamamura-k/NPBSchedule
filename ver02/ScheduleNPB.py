@@ -10,7 +10,6 @@ import japanize_matplotlib
 class NPB():
     """
     This is a class to define some basic variables and functions.
-
     """
     def __init__(self):
 
@@ -291,7 +290,7 @@ class Output(NPB):
     
     def getSchedule(self, v, game_type, league='p'):
         """
-        This is a function to get each schedules.
+        This is a function to get schedules of each team.
 
         Parameters
         ----------
