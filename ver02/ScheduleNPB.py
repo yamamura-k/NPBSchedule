@@ -9,7 +9,8 @@ import japanize_matplotlib
 
 class NPB():
     """
-    スケジュール作成において必要な定数や基本的な関数を定義するためのクラス。
+    This is a class to define some basic variables and functions.
+
     """
     def __init__(self):
 
@@ -74,11 +75,55 @@ class NPB():
         return return_list
 
 class Solve(NPB):
+    """
+    This is a class to compute schedules with minimized distance
+    """
     def __init__(self) -> None:
         super().__init__()
 
     def Solve(self, game_type, league='p', timeLimit=None, solverName=None, threads=1, option=[], initialPosition=None, bestObj=2**30):
         """
+        This is a function to solve 0-1 integer problem which aim to compute suchedule with minimized distance.
+
+        Parameters
+        ----------
+        game_type  : str
+            The type of played game.
+            Regular Game before inter game : 'r_pre'
+            Regular Game after inter game  : 'r_post'
+            Inter league                   : 'i' 
+        league     : str
+            League name 
+            Pacific league : 'p'
+            Central league : 's'
+        timeLimit  : int
+            Time limit for solver in seconds.
+        solverName : int
+            Solver's name you use
+            0 : CBC
+            1 : CPLEX
+        threads    : int
+            Threads for solver(default : 1)
+        options    : list
+            Options for solver (default : [])
+        initialPosition : list
+            Initial position of every team (default : None)
+        bestObjective : int
+            Best objective value of this problem we found before (default : 2**30)
+
+        Returns
+        -------
+        status    : int
+            Status of solved problem
+            1  : Optimal
+            0  : Not solved
+            -1 : Infeasible
+            -2 : Unbounded
+            -3 : Undefined
+        objective : int
+            Objective value of solved problem
+        v         : list
+            Solution of this problem.
         """
         # 定数
         I = self.Teams[league]
@@ -195,8 +240,20 @@ class Solve(NPB):
     def FinalPosition(self, e, league, type):
         """
         スケジュール最後の試合をどこで行なったか、と言う情報をリスト型で返す関数
-        league : 対象となるリーグ. 'p'/'s'
-        type   : 'r_pre'/'i'/'r_post'(交流戦前/交流戦/交流戦後)
+
+        Parameters
+        ----------
+        e      : dict
+            Solution of solved problem
+        league : str
+            対象となるリーグ. 'p'/'s'
+        type   : str
+            'r_pre'/'i'/'r_post'(交流戦前/交流戦/交流戦後)
+
+        Returns
+        -------
+        initial_position : list
+            List of final position of each teams.
         """
         initial_position = [0]*12
         if type in ["r_pre","r_post"]:
@@ -222,6 +279,9 @@ class Solve(NPB):
 
 
 class Output(NPB):
+    """
+    This is a class to output schedules / total distances / pictures of paths 
+    """
     def __init__(self) -> None:
         super().__init__()
         self.schedules = {'all':{i:[]for i in self.K},'r':{i:[]for i in self.K},
@@ -230,6 +290,26 @@ class Output(NPB):
         self.dists     = dict()
     
     def getSchedule(self, v, game_type, league='p'):
+        """
+        This is a function to get each schedules.
+
+        Parameters
+        ----------
+        v : dict
+            Solution of the problem
+        game_type  : str
+            The type of played game.
+            Regular Game before inter game : 'r_pre'
+            Regular Game after inter game  : 'r_post'
+            Inter league                   : 'i'
+        league     : str
+            League name 
+            Pacific league : 'p'
+            Central league : 's'
+        Returns
+        -------
+        None         
+        """
         I = self.Teams[league]
         if game_type == 'i':
             I = self.K
@@ -242,6 +322,9 @@ class Output(NPB):
                             self.schedules[game_type][j].append((s,i,'home'))
 
     def getWholeSchedule(self):
+        """
+        Get whole schedule for each team
+        """
         for i in self.K:
             game_num = 1
             for game_type in ['r_pre','i','r_post']:
@@ -251,6 +334,12 @@ class Output(NPB):
 #===========================================================#
 # パパッとデバッグ    
     def checkAnswer(self):
+        """
+        Debugging tool.
+        Display tuple of (game, team) if the team has annomary schedule.
+        After that, print sum of home/visitor games and total nomber of games
+        If we passed all of these tests, we get a messeage 'test1 passed'
+        """
         ok = True
         print('Check total number of games')
         for game in ['r_pre','r_post','i']:
@@ -272,6 +361,53 @@ class Output(NPB):
         if ok:
             print('test1 passed')
 
+    def CountGames(self, team):
+        """
+        debugging tool
+        試合数が意図通りかどうか確かめるために試合数を計算する関数
+        Parameters
+        ----------
+        team : int
+            Team ID
+        """
+        schedule_r = self.schedules['r_post'][team]
+        schedule_i = self.schedules['i'][team]
+        game_number_i = dict()
+        game_number_r = dict()
+        for v in schedule_i:
+            j = v[-2]
+            if j in game_number_i.keys():
+                if v[-1] == 'home':
+                    game_number_i[j][0] += 1
+                else:
+                    game_number_i[j][1] += 1
+            else:
+                game_number_i[j] = [0,0]
+                if v[-1] == 'home':
+                    game_number_i[j][0] += 1
+                else:
+                    game_number_i[j][1] += 1
+
+        for v in schedule_r:
+            j = v[-2]
+            if j in game_number_r.keys():
+                if v[-1] == 'home':
+                    game_number_r[j][0] += 1
+                else:
+                    game_number_r[j][1] += 1
+            else:
+                game_number_r[j] = [0,0]
+                if v[-1] == 'home':
+                    game_number_r[j][0] += 1
+                else:
+                    game_number_r[j][1] += 1
+        print('通常試合')
+        for j in game_number_r:
+            print(*game_number_r[j], sum(game_number_r[j]))
+
+        print('交流戦')
+        for j in game_number_i:
+            print(*game_number_i[j], sum(game_number_i[j])) 
 
 #======================================================================#
 # 結果表示用。        
@@ -291,6 +427,14 @@ class Output(NPB):
     def GameTable(self, i):
         """
         チームiの一年間のスケジュールを出力する関数
+        Parameters
+        ----------
+        i : int
+            Team ID
+        Returns
+        -------
+        None
+        (Display schedule as standard output)
         """
         bar = '==='
         pycolor = color.pycolor
@@ -329,6 +473,16 @@ class Output(NPB):
         通常->交流戦
         交流戦->通常
         に切り替わるタイミングでの移動距離を計算する関数
+        Parameters
+        ----------
+        team : int
+            Team ID
+        type   : str
+            'r_pre'/'i'/'r_post'(交流戦前/交流戦/交流戦後)
+        Returns
+        -------
+        self.D[post_stadium][cur_stadium] : float
+            Calculated distance
         """
         post_stadium = None
         cur_stadium = None
@@ -360,6 +514,15 @@ class Output(NPB):
     def TotalDist(self, team):
         """
         teamが一年間に移動した距離を計算・出力する関数
+        Parameters
+        ----------
+        team : int
+            Team ID
+        Returns
+        -------
+        output : str
+            Total moving-distance of each team as strings in followed format :
+            "{} : {}km".format(self.Teams_name[team], total_dist)
         """
         post_stadium = None
         cur_stadium = None
@@ -404,55 +567,26 @@ class Output(NPB):
         dists.sort(key=lambda x:x[1],reverse=True)
         for v in dists:
             i,d = v
-            print(self.Teams_name[i]+':{}km'.format(d))
-
-    def CountGames(self, team):
-        """
-        debugging tool
-        試合数が意図通りかどうか確かめるために試合数を計算する関数
-        """
-        schedule_r = self.schedules['r_post'][team]
-        schedule_i = self.schedules['i'][team]
-        game_number_i = dict()
-        game_number_r = dict()
-        for v in schedule_i:
-            j = v[-2]
-            if j in game_number_i.keys():
-                if v[-1] == 'home':
-                    game_number_i[j][0] += 1
-                else:
-                    game_number_i[j][1] += 1
-            else:
-                game_number_i[j] = [0,0]
-                if v[-1] == 'home':
-                    game_number_i[j][0] += 1
-                else:
-                    game_number_i[j][1] += 1
-
-        for v in schedule_r:
-            j = v[-2]
-            if j in game_number_r.keys():
-                if v[-1] == 'home':
-                    game_number_r[j][0] += 1
-                else:
-                    game_number_r[j][1] += 1
-            else:
-                game_number_r[j] = [0,0]
-                if v[-1] == 'home':
-                    game_number_r[j][0] += 1
-                else:
-                    game_number_r[j][1] += 1
-        print('通常試合')
-        for j in game_number_r:
-            print(*game_number_r[j], sum(game_number_r[j]))
-
-        print('交流戦')
-        for j in game_number_i:
-            print(*game_number_i[j], sum(game_number_i[j]))   
+            print(self.Teams_name[i]+':{}km'.format(d))  
 
     def Plot(self, game_type, league):
         """
         各チームの移動経路を図示する関数
+        Save directory is "./result/png/"
+        Parameters
+        ----------
+        game_type  : str
+            The type of played game.
+            Regular Game before inter game : 'r_pre'
+            Regular Game after inter game  : 'r_post'
+            Inter league                   : 'i'
+        league     : str
+            League name 
+            Pacific league : 'p'
+            Central league : 's'
+        Returns
+        -------
+        None(save image file as .png)        
         """
         total_game = self.total_game[game_type]
         schedule = self.schedules[game_type]
@@ -506,6 +640,22 @@ class Output(NPB):
     def plotOnMap(self, team, game_type):
         """
         移動経路を日本地図上にプロットする関数
+        Save directory is "./result/png/"
+        
+        Parameters
+        ----------
+        game_type  : str
+            The type of played game.
+            Regular Game before inter game : 'r_pre'
+            Regular Game after inter game  : 'r_post'
+            Inter league                   : 'i'
+        league     : str
+            League name 
+            Pacific league : 'p'
+            Central league : 's'
+        Returns
+        -------
+        None(save image file as .png)     
         """
         # 定数の設定
         total_game = self.total_game[game_type]
