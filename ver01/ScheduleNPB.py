@@ -74,12 +74,44 @@ class Solve(NPB):
 
     def RegularGame(self, league, type, initial_position=None, num_of_process=1, option=[], time_limit=3600, solver=0, bestObj=2**30):
         """
-        league           : 'p'/'s'.
-        type             : 'r_pre'/'r_post'. (交流戦前/交流戦後)
-        initial_position : 直前に試合を行なった球場を表現するリスト(1x12).
-        num_of_process   : 問題を解くさいの並列数
-        option           : solverに渡すoption
-        time_limit       : 制限時間(単位は秒)。デフォルトは3600s
+        Compute schedules of regular game
+        Parameters
+        ----------
+        league           : str
+            'p'/'s'.
+        type             : 'str
+            r_pre'/'r_post'. (交流戦前/交流戦後)
+        initial_position : list
+            直前に試合を行なった球場を表現するリスト(1x12).
+        num_of_process   : int
+            問題を解くさいの並列数
+        option           : list
+            solverに渡すoption
+        time_limit       : int
+            制限時間(単位は秒)。デフォルトは3600s
+        solver : int
+            Solver's name you use
+            0 : CBC
+            1 : CPLEX
+        bestObj          : int
+            目的関数の上限
+        Returns
+        -------
+        status    : int
+            Status of solved problem
+            1  : Optimal
+            0  : Not solved
+            -1 : Infeasible
+            -2 : Unbounded
+            -3 : Undefined
+        objective : int
+            Objective value of solved problem
+        h         : dict
+            Solution of this problem
+            It represents play games at home stadium or not
+        v         : dict
+            Solution of this problem
+            It represents play games at visitor stadium or not
         """
         if type not in ['r_pre','r_post']:
             print('key error')
@@ -227,10 +259,40 @@ class Solve(NPB):
 
     def InterLeague(self, initial_position=None, num_of_process=1, option=[], time_limit=3600, solver=0, bestObj=2**30):
         """
-        initial_position : 直前に試合を行なった球場を表現するリスト(1x12).
-        num_of_process   : 問題を解くさいの並列数
-        option           : solverに渡すoption
-        time_limit       : 制限時間(単位は秒)。デフォルトは3600s
+        Compute schedules of inter-league game
+        Parameters
+        ----------
+        initial_position : list
+            直前に試合を行なった球場を表現するリスト(1x12).
+        num_of_process   : int
+            問題を解くさいの並列数
+        option           : list
+            solverに渡すoption
+        time_limit       : int
+            制限時間(単位は秒)。デフォルトは3600s
+        solver : int
+            Solver's name you use
+            0 : CBC
+            1 : CPLEX
+        bestObj          : int
+            目的関数の上限
+        Returns
+        -------
+        status    : int
+            Status of solved problem
+            1  : Optimal
+            0  : Not solved
+            -1 : Infeasible
+            -2 : Unbounded
+            -3 : Undefined
+        objective : int
+            Objective value of solved problem
+        h         : dict
+            Solution of this problem
+            It represents play games at home stadium or not
+        v         : dict
+            Solution of this problem
+            It represents play games at visitor stadium or not
         """
         # set local variables
         D = self.D
@@ -385,10 +447,20 @@ class Solve(NPB):
     def FinalPosition(self, h, v, league, type):
         """
         スケジュール最後の試合をどこで行なったか、と言う情報をリスト型で返す関数
-        h      : ホームで行う試合についての情報を含んだ、0-1の値を持つ辞書
-        v      : ビジターで行う試合についての情報を含んだ、0-1の値を持つ辞書
-        league : 対象となるリーグ. 'p'/'s'
-        type   : 'r_pre'/'i'/'r_post'(交流戦前/交流戦/交流戦後)
+
+        Parameters
+        ----------
+        e      : dict
+            Solution of solved problem
+        league : str
+            対象となるリーグ. 'p'/'s'
+        type   : str
+            'r_pre'/'i'/'r_post'(交流戦前/交流戦/交流戦後)
+
+        Returns
+        -------
+        initial_position : list
+            List of final position of each teams.
         """
         initial_position = [0]*12
         if type in ["r_pre","r_post"]:
@@ -436,11 +508,32 @@ class Output(NPB):
     
     def getschedule(self, status, h, v, game_type, league='p'):
         """
-        status    : ソルバーできちんと解けたか
-        h         : ホームで行う試合についての情報を含んだ、0-1の値を持つ辞書
-        v         : ビジターで行う試合についての情報を含んだ、0-1の値を持つ辞書
-        game_type : 'r_pre'/'i'/'r_post'(交流戦前/交流戦/交流戦後)
-        league    : 対象となるリーグ(デフォルトはパ・リーグ)
+        This is a function to get schedules of each team.
+        Parameters
+        ----------
+        status    : int
+            Status of solved problem
+            1  : Optimal
+            0  : Not solved
+            -1 : Infeasible
+            -2 : Unbounded
+            -3 : Undefined
+        h         : dict
+            ホームで行う試合についての情報を含んだ、0-1の値を持つ辞書
+        v         : dict
+            ビジターで行う試合についての情報を含んだ、0-1の値を持つ辞書
+        game_type : str
+            The type of played game.
+            Regular Game before inter game : 'r_pre'
+            Regular Game after inter game  : 'r_post'
+            Inter league                   : 'i'
+        league    : str
+            League name 
+            Pacific league : 'p'
+            Central league : 's'
+        Returns
+        -------
+        None         
         """
         if status < 0:
             print('infeasible')
@@ -499,10 +592,24 @@ class Output(NPB):
     def GamePerDay(self, w, d, league, game_type='r'):
         """
         週と曜日を指定した際に行われる試合を出力する関数。
-        w         : 週
-        d         : 曜日
-        league    : 考えるリーグ
-        game_type : 通常/交流戦
+        Parameters
+        ----------
+        w         : int
+            週
+        d         : int
+            曜日
+        game_type : str
+            The type of played game.
+            Regular Game before inter game : 'r_pre'
+            Regular Game after inter game  : 'r_post'
+            Inter league                   : 'i'
+        league    : str
+            League name 
+            Pacific league : 'p'
+            Central league : 's'
+        Returns
+        -------
+        None
         """
         pycolor = color.pycolor
         schedule = self.schedules[game_type]
@@ -544,6 +651,14 @@ class Output(NPB):
     def GameTable(self, i):
         """
         チームiの一年間のスケジュールを出力する関数
+        Parameters
+        ----------
+        i : int
+            Team ID
+        Returns
+        -------
+        None
+        (Display schedule as standard output)
         """
         bar = '==='
         pycolor = color.pycolor
@@ -589,6 +704,16 @@ class Output(NPB):
         通常->交流戦
         交流戦->通常
         に切り替わるタイミングでの移動距離を計算する関数
+        Parameters
+        ----------
+        team : int
+            Team ID
+        type   : str
+            'r_pre'/'i'/'r_post'(交流戦前/交流戦/交流戦後)
+        Returns
+        -------
+        self.D[post_stadium][cur_stadium] : float
+            Calculated distance
         """
         post_stadium = None
         cur_stadium = None
@@ -620,6 +745,15 @@ class Output(NPB):
     def TotalDist(self, team):
         """
         teamが一年間に移動した距離を計算・出力する関数
+        Parameters
+        ----------
+        team : int
+            Team ID
+        Returns
+        -------
+        output : str
+            Total moving-distance of each team as strings in followed format :
+            "{} : {}km".format(self.Teams_name[team], total_dist)
         """
         post_stadium = None
         cur_stadium = None
@@ -674,6 +808,10 @@ class Output(NPB):
         """
         debugging tool
         試合数が意図通りかどうか確かめるために試合数を計算する関数
+        Parameters
+        ----------
+        team : int
+            Team ID
         """
         schedule_r = self.schedules['r_post'][team]
         schedule_i = self.schedules['i'][team]
@@ -721,6 +859,21 @@ class Output(NPB):
     def Plot(self, game_type, league):
         """
         各チームの移動経路を図示する関数
+        Save directory is "./result/png/"
+        Parameters
+        ----------
+        game_type  : str
+            The type of played game.
+            Regular Game before inter game : 'r_pre'
+            Regular Game after inter game  : 'r_post'
+            Inter league                   : 'i'
+        league     : str
+            League name 
+            Pacific league : 'p'
+            Central league : 's'
+        Returns
+        -------
+        None(save image file as .png) 
         """
         total_game = self.total_game[game_type]
         schedule = self.schedules[game_type]
@@ -772,6 +925,21 @@ class Output(NPB):
     def plotOnMap(self, team, game_type):
         """
         移動経路を日本地図上にプロットする関数
+        Save directory is "./result/png/"
+        Parameters
+        ----------
+        game_type  : str
+            The type of played game.
+            Regular Game before inter game : 'r_pre'
+            Regular Game after inter game  : 'r_post'
+            Inter league                   : 'i'
+        league     : str
+            League name 
+            Pacific league : 'p'
+            Central league : 's'
+        Returns
+        -------
+        None(save image file as .png) 
         """
         # 定数の設定
         total_game = self.total_game[game_type]
