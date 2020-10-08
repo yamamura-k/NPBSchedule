@@ -149,7 +149,7 @@ if __name__ == "__main__":
     num_process = args.th
     limit = args.t
     solver = args.s
-    if args.par:
+    if args.part:
         partSolve(num_process=num_process,time_limit=limit,solver=solver)
         exit()
     Solve(num_process=num_process,time_limit=limit,solver=solver)
