@@ -5,7 +5,7 @@ from utils.utils import Load
 from argparse import ArgumentParser
 def main(distance=False, tables=False):
     output = ScheduleNPB.Output()
-    leagues = ['s','p']
+    leagues = ['r','p']
     for league in leagues:
         filename = 'r_pre_'+league+'.pkl'
         e = Load(filename)
@@ -26,7 +26,6 @@ def main(distance=False, tables=False):
             print(dists[team])
     if tables:
         output.GameTables()
-    output.Visualize()
 
 def argparser():
     parser = ArgumentParser()

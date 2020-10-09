@@ -160,7 +160,7 @@ class Solve(NPB):
                         problem += v[s][i][k]-e[s][i][j][k] >= 0
         for s in S:
             for i in I:
-                # 垂直に足して見てね！
+                # 垂直に足して見てね！パワポの制約⑦
                 problem += pulp.lpSum([v[s][j][i] for j in I])<=2
             
         for i in I:
@@ -201,23 +201,31 @@ class Solve(NPB):
         
         for s in S[:-2]:
             for i in I:
-                # ホームは連続二連ちゃんまで
+                # ホームは連続二連ちゃんまで！パワポの制約⑧
                 problem += pulp.lpSum([v[t][i][i]for t in range(s,s+3)]) <= 2
         
         if game_type == 'i':
-            # 自分のリーグに属するチームとは試合を行わないと言う制約
             L = self.Teams['p']
             J = self.Teams['s']
             for s in S:
                 for i in L:
+                    # 自分のリーグに属するチームとは試合を行わないと言う制約。パワポの制約⑨
                     for j in L:
                         if i != j:
                             problem += v[s][i][j] == 0
+                    # もう一方のリーグのチームと一回ずつ試合をするという制約。パワポの制約11
+                    for j in J:
+                        problem += v[s][i][j] <= (1-pulp.lpSum([v[t][j][i]for t in range(s)]))
                 for i in J:
+                    # 自分のリーグに属するチームとは試合を行わないと言う制約。パワポの制約⑨
                     for j in J:
                         if i != j:
                             problem += v[s][i][j] == 0
-            # ビジターで試合をしている時はホームで試合をしてはいけない
+                    # もう一方のリーグのチームと一回ずつ試合をするという制約。パワポの制約11
+                    for j in L:
+                        problem += v[s][i][j] <= (1-pulp.lpSum([v[t][j][i]for t in range(s)]))
+
+            # ビジターで試合をしている時はホームで試合をしてはいけない。パワポの制約⑩
             # v[s][i][i]=1かv[s][i][j]=1の何か一方が成立する
             for s in S:
                 for i in L:
