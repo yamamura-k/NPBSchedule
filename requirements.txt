@@ -1,0 +1,9 @@
+# common
+pulp
+matplotlib
+pillow
+ffmpeg
+japanize_matplotlib
+
+# for ver03
+deap
