@@ -21,7 +21,7 @@ def main(m=False, p=False):
         output.getSchedule(e, 'r_post', league=league)
     output.getWholeSchedule()
     output.MergeRegularSchedule()
-    #output.createMovie(0, 'i')
+    
     if m:
         output.createMovies()
     if p:

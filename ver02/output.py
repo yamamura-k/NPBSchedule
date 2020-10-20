@@ -26,7 +26,7 @@ def main(distance=False, tables=False):
             print(dists[team])
     if tables:
         output.GameTables()
-    output.Visualize()
+   
 
 def argparser():
     parser = ArgumentParser()

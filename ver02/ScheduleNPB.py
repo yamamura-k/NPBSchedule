@@ -1,9 +1,10 @@
-from utils import color
+from utils import color, utils
 
 import os
 import math
 import pulp
 from matplotlib import pyplot as plt
+from matplotlib.animation import ArtistAnimation
 import japanize_matplotlib
 
 
@@ -80,7 +81,7 @@ class Solve(NPB):
     def __init__(self) -> None:
         super().__init__()
 
-    def Solve(self, game_type, league='p', timeLimit=None, solverName=None, threads=1, option=[], initialPosition=None, bestObj=2**30):
+    def Solve(self, game_type, league='ps', timeLimit=None, solverName=None, threads=1, option=[], initialPosition=None, initialSolution=False):
         """
         This is a function to solve 0-1 integer problem which aim to compute suchedule with minimized distance.
 
@@ -107,8 +108,8 @@ class Solve(NPB):
             Options for solver (default : [])
         initialPosition : list
             Initial position of every team (default : None)
-        bestObjective : int
-            Best objective value of this problem we found before (default : 2**30)
+        initialSolution : bool
+            If true, start with initial value
 
         Returns
         -------
@@ -125,11 +126,14 @@ class Solve(NPB):
             Solution of this problem.
         """
         # 定数
-        I = self.Teams[league]
-        S = self.S[game_type]
-        D = self.D
         if game_type == 'i':
             I = self.K
+        else:
+            I = self.Teams[league]
+        
+        S = self.S[game_type]
+        D = self.D
+
         total_game = self.total_game[game_type]
 
         # 問題の宣言
@@ -146,9 +150,6 @@ class Solve(NPB):
         problem += obj
 
         # 制約式を入れる
-
-        # 目的関数値が改善された時だけ答えを出力してもらう。
-        problem += obj <= bestObj
 
         for i in I:
             for j in I:
@@ -232,13 +233,19 @@ class Solve(NPB):
                     problem += v[s][i][i]+pulp.lpSum([v[s][i][j]for j in J]) <= 1
                 for j in J:
                     problem += v[s][j][j]+pulp.lpSum([v[s][j][i]for i in L]) <= 1
-
+        
+        if initialSolution:
+            v_initial = utils.Load(game_type+"_"+league+'.pkl')
+            for s in S:
+                for i in I:
+                    for j in I:
+                        v[s][i][j].setInitialValue(v_initial[s][i][j].value())
         # solverの設定
         # デフォルトは cbc solver
         if solverName == 0:
-            solver = pulp.PULP_CBC_CMD(msg=1, threads=threads,options=option, maxSeconds=timeLimit)
+            solver = pulp.PULP_CBC_CMD(msg=1, threads=threads,options=option, maxSeconds=timeLimit, warmStart=True)
         elif solverName == 1:
-            solver = pulp.CPLEX_CMD(msg=1, timeLimit=timeLimit,options=option, threads=threads)
+            solver = pulp.CPLEX_CMD(msg=1, timeLimit=timeLimit,options=option, threads=threads, warmStart=True)
         
         status = problem.solve(solver)
 
@@ -431,7 +438,7 @@ class Output(NPB):
                 schedule[i] = self.schedules['r_pre'][i]+self.schedules['r_post'][i]
         
  
-    def GameTable(self, i):
+    def GameTable(self, i, savefile=None):
         """
         チームiの一年間のスケジュールを出力する関数
         Parameters
@@ -445,7 +452,34 @@ class Output(NPB):
         """
         bar = '==='
         pycolor = color.pycolor
-        print(bar+self.Teams_name[i]+bar)
+        if savefile:
+            n = "\n"
+            with open(savefile, 'w') as f:
+                f.write(bar+self.Teams_name[i]+bar+n)
+                for game_type in ['r','i']:
+                    h = 0
+                    v = 0
+                    if game_type == 'r':
+                        f.write('===通常試合==='+n)
+                    else:
+                        f.write('===交流戦==='+n)
+        
+                    if game_type not in self.schedules.keys():
+                        f.write('None'+n)
+                        continue
+        
+                    for o in self.schedules[game_type][i]:
+                        if o[-1] == "home":
+                            f.write(str(o[0]+1)+pycolor.GREEN+self.Teams_name[o[-2]]+pycolor.END+n)
+                            h += 1
+                        else:
+                            f.write(str(o[0]+1)+pycolor.PURPLE+self.Teams_name[o[-2]]+pycolor.END+n)
+                            v += 1
+        
+                    f.write("home:{}\nvisitor:{}".format(h,v)+n)                
+                f.write(bar+self.Teams_name[i]+bar+n)
+            exit()
+
         for game_type in ['r','i']:
             h = 0
             v = 0
@@ -473,7 +507,8 @@ class Output(NPB):
         全チームの一年間のスケジュールを順番に出力する関数
         """
         for i in range(12):
-            self.GameTable(i)
+            filename = "./logs/schedule_{}.txt".format(i)
+            self.GameTable(i, savefile=filename)
 
     def CalcDist(self, team, type):
         """
@@ -576,73 +611,6 @@ class Output(NPB):
             i,d = v
             print(self.Teams_name[i]+':{}km'.format(d))  
 
-    def Plot(self, game_type, league):
-        """
-        各チームの移動経路を図示する関数
-        Save directory is "./result/png/"
-        Parameters
-        ----------
-        game_type  : str
-            The type of played game.
-            Regular Game before inter game : 'r_pre'
-            Regular Game after inter game  : 'r_post'
-            Inter league                   : 'i'
-        league     : str
-            League name 
-            Pacific league : 'p'
-            Central league : 's'
-        Returns
-        -------
-        None(save image file as .png)        
-        """
-        total_game = self.total_game[game_type]
-        schedule = self.schedules[game_type]
-        
-        route_x = []
-        route_y = []
-        
-        if game_type=='r':
-            I = self.Teams[league]
-            fig, axes = plt.subplots(3, 2)
-            row_max   = 1
-        else:
-            I = self.Teams['p']+self.Teams['s']
-            fig, axes = plt.subplots(6, 2)
-            row_max   = 4
-            league    = 'all'
-        plt.subplots_adjust(wspace=0.4, hspace=0.6)
-
-        row = col = 0
-
-        for team in I:
-            for k in range(total_game):
-                if k >= len(schedule[team]):
-                    break
-                _, j, stadium = schedule[team][k]
-                if stadium == 'visitor':
-                    route_x.append(self.coordinates[j][1])
-                    route_y.append(self.coordinates[j][0])
-                else:
-                    route_x.append(self.coordinates[team][1])
-                    route_y.append(self.coordinates[team][0])
-            axes[row, col].plot([self.coordinates[i][1]for i in range(6)],
-                                [self.coordinates[i][0]for i in range(6)],'bo')
-
-            axes[row, col].plot([self.coordinates[i][1]for i in range(6,12)],
-                                [self.coordinates[i][0]for i in range(6,12)],'go')
-
-            axes[row, col].plot(route_x, route_y, 'r-')
-            axes[row,col].set_title(self.Teams_name[team])
-            if row <= row_max:
-                row += 1
-            elif col <= 0:
-                col += 1
-                row = 0
-            route_x = []
-            route_y = []
-        save_dir = "./result/png"
-        plt.savefig(os.path.join(save_dir,'{}_{}.png'.format(game_type,league)))
-        plt.close()
 
     def plotOnMap(self, team, game_type):
         """
@@ -680,11 +648,14 @@ class Output(NPB):
         # パ・リーグ
         x,y = m([self.coordinates[i][1]for i in range(6)],
                 [self.coordinates[i][0]for i in range(6)])
-        m.plot(x,y,'bo',markersize=5)
+        m.plot(x,y,'bo',markersize=3.5)
         # セ・リーグ
         x,y = m([self.coordinates[i][1]for i in range(6,12)],
                 [self.coordinates[i][0]for i in range(6,12)]) 
-        m.plot(x,y,'go',markersize=5)
+        m.plot(x,y,'go',markersize=3.5)
+        # 自チームを赤色でプロット
+        x,y = m(self.coordinates[team][1], self.coordinates[team][0])
+        m.plot(x,y,'ro',markersize=5)
         # 移動経路を求める
         for k in range(total_game):
             if k >= len(schedule):
@@ -698,7 +669,7 @@ class Output(NPB):
                 route_y.append(self.coordinates[team][0])
         route_x,route_y = m(route_x, route_y)  
         # 移動経路の描画
-        m.plot(route_x, route_y, 'r-')
+        m.plot(route_x, route_y, 'lime')
         # 海岸線を描く、国境を塗る、海(背景)を塗る, 大陸を塗る
         m.drawcoastlines(linewidth=0.25)
         m.drawcountries(linewidth=0.25)
@@ -714,8 +685,91 @@ class Output(NPB):
         全チーム、全試合形式の移動経路をプロット
         """
         for game_type in ['r','i']:
-            for league in ['p','s']:
-                self.Plot(game_type,league)
-        for game_type in ['r','i']:
             for team in range(12):
                 self.plotOnMap(team, game_type)
+
+#===============動画==================================#
+
+    def createMovie(self, team, game_type):
+        """
+        移動経路を日本地図上にプロット、動画として保存する関数
+        Save directory is "./result/movies/"
+        
+        Parameters
+        ----------
+        game_type  : str
+            The type of played game.
+            Regular Game before inter game : 'r_pre'
+            Regular Game after inter game  : 'r_post'
+            Inter league                   : 'i'
+        league     : str
+            League name 
+            Pacific league : 'p'
+            Central league : 's'
+        Returns
+        -------
+        None(save movie as .gif, .mp4)     
+        """
+        artists = []
+        # 定数の設定
+        total_game = self.total_game[game_type]
+        schedule = self.schedules[game_type][team]
+        route_x = []
+        route_y = []    
+        from mpl_toolkits.basemap import Basemap
+        # 地図の描画
+        fig = plt.figure()
+        m = Basemap(projection='lcc', lat_0 = 35.4, lon_0 = 136.7,
+                    resolution = 'i', area_thresh = 0.1,
+                    llcrnrlon=128., llcrnrlat=30.,
+                    urcrnrlon=147., urcrnrlat=46.)
+        # 海岸線を描く、国境を塗る、海(背景)を塗る, 大陸を塗る
+        m.drawcoastlines(linewidth=0.25)
+        m.drawcountries(linewidth=0.25)
+        m.drawmapboundary(fill_color='skyblue')
+        m.fillcontinents(color='bisque',lake_color='skyblue')
+        # 各チームの本拠地をプロット
+        # パ・リーグ
+        x,y = m([self.coordinates[i][1]for i in range(6)],
+                [self.coordinates[i][0]for i in range(6)])
+        m.plot(x,y,'bo',markersize=3.5)
+        # セ・リーグ
+        x,y = m([self.coordinates[i][1]for i in range(6,12)],
+                [self.coordinates[i][0]for i in range(6,12)]) 
+        m.plot(x,y,'go',markersize=3.5)
+        # 自チームを赤色でプロット
+        x,y = m(self.coordinates[team][1], self.coordinates[team][0])
+        m.plot(x,y,'ro',markersize=5)
+        # 移動経路を求める
+        for k in range(total_game):
+            artist = []
+            if k >= len(schedule):
+                break
+            _, j, stadium = schedule[k]
+            if stadium == 'visitor':
+                route_x.append(self.coordinates[j][1])
+                route_y.append(self.coordinates[j][0])
+            else:
+                route_x.append(self.coordinates[team][1])
+                route_y.append(self.coordinates[team][0])
+            route_xx,route_yy = m(route_x[:-2], route_y[:-2])  
+            # 移動経路の描画
+            artist += m.plot(route_xx, route_yy, 'darkgray')
+            route_xx,route_yy = m(route_x[-2:], route_y[-2:])
+            artist += m.plot(route_xx, route_yy, 'r')
+            artists.append(artist)
+
+        # 動画を保存
+        save_dir = "./result/movies/"
+        ani = ArtistAnimation(fig, artists, interval=300, repeat_delay=1000)
+        ani.save(os.path.join(save_dir,'Schedule_{}_{}.gif'.format(game_type,team)))
+        ani.save(os.path.join(save_dir,'Schedule_{}_{}.mp4'.format(game_type,team)))
+        plt.close()
+
+    def createMovies(self):
+        """
+        全チーム、全試合形式の移動経路をプロット
+        """
+        for game_type in ['r','i']:
+            for team in range(12):
+                self.createMovie(team, game_type)

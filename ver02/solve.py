@@ -29,42 +29,29 @@ def Solve(num_process=1,options=[],time_limit=None,solver=0):
     -------
     None
     """
-    with open('bestObjective.txt', 'r+') as f:
-        best = [float(s.strip()) for s in f.readlines()]
-        initial_position = dict()
-        sol = ScheduleNPB.Solve()
-        leagues = ['p', 's']
-        index = 0
+    initial_position = dict()
+    sol = ScheduleNPB.Solve()
+    leagues = ['p', 's']
 
-        for league in leagues:
-            status, obj, e = sol.Solve("r_pre",league=league,threads=num_process,timeLimit=time_limit,solverName=solver,option=options,bestObj=best[index])
-            if status==1:
-                preserve(e,'r_pre_'+league)
-                best[index] = min(best[index], float(obj))
-            index += 1
-            e = Load('r_pre_'+league+'.pkl')
-            initial_position[league] = sol.FinalPosition(e, league, 'r_pre')
-
-        position_for_inter = sol.Merge(initial_position['p'],initial_position['s'])
-        status, obj, e = sol.Solve('i', initialPosition = position_for_inter, threads=num_process,timeLimit=time_limit,solverName=solver,option=options,bestObj=best[index])
+    for league in leagues:
+        status, obj, e = sol.Solve("r_pre",league=league,threads=num_process,timeLimit=time_limit,solverName=solver,option=options,initialSolution=True)
         if status==1:
-            preserve(e,'i_ps')
-            best[index] = min(best[index], float(obj))
-        index += 1
-        e = Load('i_ps.pkl')
-        initial_position['r'] = sol.FinalPosition(e, None, 'i')
-        
-        for league in leagues:
-            status, obj, e = sol.Solve("r_post",league=league,initialPosition=initial_position['r'],threads=num_process,timeLimit=time_limit,solverName=solver,option=options,bestObj=best[index])
-            if status==1:
-                preserve(e,'r_post_'+league)     
-                best[index] = min(best[index], float(obj))
-            index += 1
+            preserve(e,'r_pre_'+league)
 
-    f = open('bestObjective.txt', 'w')
-    best = list(map(lambda x: str(x)+'\n', best))
-    f.writelines(best)
-    f.close()
+        e = Load('r_pre_'+league+'.pkl')
+        initial_position[league] = sol.FinalPosition(e, league, 'r_pre')
+
+    position_for_inter = sol.Merge(initial_position['p'],initial_position['s'])
+    status, obj, e = sol.Solve('i', initialPosition = position_for_inter, threads=num_process,timeLimit=time_limit,solverName=solver,option=options,initialSolution=True)
+    if status==1:
+        preserve(e,'i_ps')
+    e = Load('i_ps.pkl')
+    initial_position['r'] = sol.FinalPosition(e, None, 'i')
+
+    for league in leagues:
+        status, obj, e = sol.Solve("r_post",league=league,initialPosition=initial_position['r'],threads=num_process,timeLimit=time_limit,solverName=solver,option=options,initialSolution=True)
+        if status==1:
+            preserve(e,'r_post_'+league)     
 
 def partSolve(num_process=1,options=[],time_limit=None,solver=0):
     """
@@ -91,35 +78,26 @@ def partSolve(num_process=1,options=[],time_limit=None,solver=0):
     -------
     None
     """
-    with open('bestObjective.txt', 'r') as f:
-        best = [float(s.strip()) for s in f.readlines()]
-        initial_position = dict()
-        sol = ScheduleNPB.Solve()
-        leagues = ['p', 's']
-        index = 2
-        for league in leagues:
-            e = Load('r_pre_'+league+'.pkl')
-            initial_position[league] = sol.FinalPosition(e, league, 'r_pre')
+    initial_position = dict()
+    sol = ScheduleNPB.Solve()
+    leagues = ['p', 's']
 
-        position_for_inter = sol.Merge(initial_position['p'],initial_position['s'])
-        status, obj, e = sol.Solve('i', initialPosition = position_for_inter, threads=num_process,timeLimit=time_limit,solverName=solver,option=options,bestObj=best[index])
+    for league in leagues:
+        e = Load('r_pre_'+league+'.pkl')
+        initial_position[league] = sol.FinalPosition(e, league, 'r_pre')
+
+    position_for_inter = sol.Merge(initial_position['p'],initial_position['s'])
+    status, obj, e = sol.Solve('i', initialPosition = position_for_inter, threads=num_process,timeLimit=time_limit,solverName=solver,option=options,initialSolution=True)
+    if status==1:
+        preserve(e,'i_ps')
+        
+    e = Load('i_ps.pkl')
+    initial_position['r'] = sol.FinalPosition(e, None, 'i')
+    for league in leagues:
+        status, obj, e = sol.Solve("r_post",league=league,initialPosition=initial_position['r'],threads=num_process,timeLimit=time_limit,solverName=solver,option=options,initialSolution=True)
         if status==1:
-            preserve(e,'i_ps')
-            best[index] = min(best[index], float(obj))
-        index += 1
-        e = Load('i_ps.pkl')
-        initial_position['r'] = sol.FinalPosition(e, None, 'i')
-        for league in leagues:
-            status, obj, e = sol.Solve("r_post",league=league,initialPosition=initial_position['r'],threads=num_process,timeLimit=time_limit,solverName=solver,option=options,bestObj=best[index])
-            if status==1:
-                preserve(e,'r_post_'+league)     
-                best[index] = min(best[index], float(obj))
-            index += 1
+            preserve(e,'r_post_'+league)     
 
-    f = open('bestObjective.txt', 'w')
-    best = list(map(lambda x: str(x)+'\n', best))
-    f.writelines(best)
-    f.close()
 
 
 def argparser():

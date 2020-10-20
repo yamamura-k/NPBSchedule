@@ -6,3 +6,4 @@ clone1-a.log
 clone0-a.log
 /CPLEX_CMD-a.guide
 /CBC_CMD-a.guide
+*.tar.gz
