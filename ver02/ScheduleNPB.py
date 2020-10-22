@@ -452,33 +452,27 @@ class Output(NPB):
         """
         bar = '==='
         pycolor = color.pycolor
-        if savefile:
-            n = "\n"
-            with open(savefile, 'w') as f:
-                f.write(bar+self.Teams_name[i]+bar+n)
-                for game_type in ['r','i']:
-                    h = 0
-                    v = 0
-                    if game_type == 'r':
-                        f.write('===通常試合==='+n)
-                    else:
-                        f.write('===交流戦==='+n)
-        
-                    if game_type not in self.schedules.keys():
-                        f.write('None'+n)
-                        continue
-        
-                    for o in self.schedules[game_type][i]:
-                        if o[-1] == "home":
-                            f.write(str(o[0]+1)+pycolor.GREEN+self.Teams_name[o[-2]]+pycolor.END+n)
-                            h += 1
-                        else:
-                            f.write(str(o[0]+1)+pycolor.PURPLE+self.Teams_name[o[-2]]+pycolor.END+n)
-                            v += 1
-        
-                    f.write("home:{}\nvisitor:{}".format(h,v)+n)                
-                f.write(bar+self.Teams_name[i]+bar+n)
-            exit()
+        n = ""
+        print(bar+self.Teams_name[i]+bar+n)
+        for game_type in ['r','i']:
+            h = 0
+            v = 0
+            if game_type == 'r':
+                print('===通常試合==='+n)
+            else:
+                print('===交流戦==='+n)
+            if game_type not in self.schedules.keys():
+                print('None'+n)
+                continue
+            for o in self.schedules[game_type][i]:
+                if o[-1] == "home":
+                    print(str(o[0]+1)+pycolor.GREEN+self.Teams_name[o[-2]]+pycolor.END+n)
+                    h += 1
+                else:
+                    print(str(o[0]+1)+pycolor.PURPLE+self.Teams_name[o[-2]]+pycolor.END+n)
+                    v += 1
+            print("home:{}\nvisitor:{}".format(h,v)+n)                
+        print(bar+self.Teams_name[i]+bar+n)
 
         for game_type in ['r','i']:
             h = 0
@@ -639,7 +633,7 @@ class Output(NPB):
         route_y = []    
         from mpl_toolkits.basemap import Basemap
         # 地図の描画
-        fig = plt.figure()
+        fig = plt.figure(figsize=(4,4))
         m = Basemap(projection='lcc', lat_0 = 35.4, lon_0 = 136.7,
                     resolution = 'i', area_thresh = 0.1,
                     llcrnrlon=128., llcrnrlat=30.,
@@ -718,7 +712,7 @@ class Output(NPB):
         route_y = []    
         from mpl_toolkits.basemap import Basemap
         # 地図の描画
-        fig = plt.figure()
+        fig = plt.figure(figsize=(4,4))
         m = Basemap(projection='lcc', lat_0 = 35.4, lon_0 = 136.7,
                     resolution = 'i', area_thresh = 0.1,
                     llcrnrlon=128., llcrnrlat=30.,

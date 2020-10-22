@@ -41,7 +41,7 @@ def Solve(num_process=1,options=[],time_limit=None,solver=0):
 
     f = open('bestObjective.txt', 'w')
     best = list(map(lambda x: str(x)+'\n', best))
-    f.writelines(best)
+    printlines(best)
     f.close()
 
 def partSolve(num_process=1,options=[],time_limit=None,solver=0):
