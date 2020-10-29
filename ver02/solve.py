@@ -85,16 +85,17 @@ def partSolve(num_process=1,options=[],time_limit=None,solver=0):
     for league in leagues:
         e = Load('r_pre_'+league+'.pkl')
         initial_position[league] = sol.FinalPosition(e, league, 'r_pre')
-
+        print(initial_position)
     position_for_inter = sol.Merge(initial_position['p'],initial_position['s'])
-    status, obj, e = sol.Solve('i', initialPosition = position_for_inter, threads=num_process,timeLimit=time_limit,solverName=solver,option=options,initialSolution=True)
-    if status==1:
-        preserve(e,'i_ps')
+    #status, obj, e = sol.Solve('i', initialPosition = position_for_inter, threads=num_process,timeLimit=time_limit,solverName=solver,option=options,initialSolution=True)
+    #if status==1:
+    #    preserve(e,'i_ps')
         
     e = Load('i_ps.pkl')
     initial_position['r'] = sol.FinalPosition(e, None, 'i')
     for league in leagues:
-        status, obj, e = sol.Solve("r_post",league=league,initialPosition=initial_position['r'],threads=num_process,timeLimit=time_limit,solverName=solver,option=options,initialSolution=True)
+        if league == 'p':continue
+        status, obj, e = sol.Solve("r_post",league=league,initialPosition=initial_position['r'],threads=num_process,timeLimit=time_limit,solverName=solver,option=options,initialSolution=False)
         if status==1:
             preserve(e,'r_post_'+league)     
 

@@ -276,18 +276,16 @@ class Solve(NPB):
             s_end = S[-1]
             for i in I:
                 for j in I:
-                    if e[s_end][i][j] == 1:
-                        initial_position[i] = i
-                        initial_position[j] = i
+                    if pulp.value(e[s_end][i][j]) == 1:
+                        initial_position[i] = j
         else:
             I = self.K
             S = self.S[type]
             s_end = S[-1]
             for i in I:
                 for j in I:
-                    if e[s_end][i][j] == 1:
-                        initial_position[i] = i
-                        initial_position[j] = i
+                    if pulp.value(e[s_end][i][j]) == 1:
+                        initial_position[i] = j
         
         return initial_position
 
@@ -344,6 +342,7 @@ class Output(NPB):
             for game_type in ['r_pre','i','r_post']:
                 for v in self.schedules[game_type][i]:
                     self.schedules['all'][i].append((game_num,v[1],v[2]))
+                    game_num += 1
 
 #===========================================================#
 # パパッとデバッグ    
