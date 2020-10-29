@@ -20,8 +20,7 @@ def LoadData():
         output.getSchedule(e, 'r_post', league=league)
     output.getWholeSchedule()
     output.MergeRegularSchedule()
-    #output.checkAnswer()
-
+    
     return output.schedules['all']
 
 def CreateTable(schedules):
