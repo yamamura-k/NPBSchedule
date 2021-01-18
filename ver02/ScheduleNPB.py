@@ -150,7 +150,6 @@ class Solve(NPB):
         problem += obj
 
         # 制約式を入れる
-
         for i in I:
             for j in I:
                 for k in I:
@@ -205,6 +204,181 @@ class Solve(NPB):
                 # ホームは連続二連ちゃんまで！パワポの制約⑧
                 problem += pulp.lpSum([v[t][i][i]for t in range(s,s+3)]) <= 2
         
+        if game_type == 'i':
+            L = self.Teams['p']
+            J = self.Teams['s']
+            for s in S:
+                for i in L:
+                    # 自分のリーグに属するチームとは試合を行わないと言う制約。パワポの制約⑨
+                    for j in L:
+                        if i != j:
+                            problem += v[s][i][j] == 0
+                    # もう一方のリーグのチームと一回ずつ試合をするという制約。パワポの制約11
+                    for j in J:
+                        problem += v[s][i][j] <= (1-pulp.lpSum([v[t][j][i]for t in range(s)]))
+                for i in J:
+                    # 自分のリーグに属するチームとは試合を行わないと言う制約。パワポの制約⑨
+                    for j in J:
+                        if i != j:
+                            problem += v[s][i][j] == 0
+                    # もう一方のリーグのチームと一回ずつ試合をするという制約。パワポの制約11
+                    for j in L:
+                        problem += v[s][i][j] <= (1-pulp.lpSum([v[t][j][i]for t in range(s)]))
+
+            # ビジターで試合をしている時はホームで試合をしてはいけない。パワポの制約⑩
+            # v[s][i][i]=1かv[s][i][j]=1の何か一方が成立する
+            for s in S:
+                for i in L:
+                    problem += v[s][i][i]+pulp.lpSum([v[s][i][j]for j in J]) <= 1
+                for j in J:
+                    problem += v[s][j][j]+pulp.lpSum([v[s][j][i]for i in L]) <= 1
+        
+        if initialSolution:
+            v_initial = utils.Load(game_type+"_"+league+'.pkl')
+            for s in S:
+                for i in I:
+                    for j in I:
+                        v[s][i][j].setInitialValue(v_initial[s][i][j].value())
+        # solverの設定
+        # デフォルトは cbc solver
+        if solverName == 0:
+            solver = pulp.PULP_CBC_CMD(msg=1, threads=threads,options=option, maxSeconds=timeLimit, warmStart=True)
+        elif solverName == 1:
+            solver = pulp.CPLEX_CMD(msg=1, timeLimit=timeLimit,options=option, threads=threads, warmStart=True)
+        
+        status = problem.solve(solver)
+
+        return status, pulp.value(problem.objective), v
+
+    def SolveWithReluxation(self, game_type, league='ps', timeLimit=None, solverName=None, threads=1, option=[], initialPosition=None, initialSolution=False):
+        """
+        This is a function to solve 0-1 integer problem which aim to compute suchedule with minimized distance.
+
+        Parameters
+        ----------
+        game_type  : str
+            The type of played game.
+            Regular Game before inter game : 'r_pre'
+            Regular Game after inter game  : 'r_post'
+            Inter league                   : 'i' 
+        league     : str
+            League name 
+            Pacific league : 'p'
+            Central league : 's'
+        timeLimit  : int
+            Time limit for solver in seconds.
+        solverName : int
+            Solver's name you use
+            0 : CBC
+            1 : CPLEX
+        threads    : int
+            Threads for solver(default : 1)
+        options    : list
+            Options for solver (default : [])
+        initialPosition : list
+            Initial position of every team (default : None)
+        initialSolution : bool
+            If true, start with initial value
+
+        Returns
+        -------
+        status    : int
+            Status of solved problem
+            1  : Optimal
+            0  : Not solved
+            -1 : Infeasible
+            -2 : Unbounded
+            -3 : Undefined
+        objective : int
+            Objective value of solved problem
+        v         : list
+            Solution of this problem.
+        """
+        # 定数
+        if game_type == 'i':
+            I = self.K
+        else:
+            I = self.Teams[league]
+        
+        S = self.S[game_type]
+        D = self.D
+
+        total_game = self.total_game[game_type]
+
+        # 問題の宣言
+        problem = pulp.LpProblem('scheduling', pulp.LpMinimize)
+        # 変数の生成
+        v = pulp.LpVariable.dicts('v',(S,I,I),0,1,'Integer')
+        e = pulp.LpVariable.dicts('e',(S,I,I,I),0,1,'Integer')
+        penal1 = pulp.LpVariable.dicts('p1',(I,I),lowBound=0)
+        penal2 = pulp.LpVariable.dicts('p2',(S,I),lowBound=0)
+        penal3 = pulp.LpVariable.dicts('p2',(S,I,I),lowBound=0)
+
+        # 目的関数の設定
+        obj = pulp.lpSum([D[j][k]*e[s][i][j][k] for i in I for j in I for k in I for s in S])
+        obj += 100*(pulp.lpSum([penal1[i][j]for i in I for j in I])+pulp.lpSum([penal2[s][i]for s in S for i in I])+pulp.lpSum([penal3[s][i][j]for s in S for i in I for j in I]))
+        if initialPosition:
+            for i in I:
+                obj += pulp.lpSum([D[initialPosition[i]][j]*v[0][i][j]for j in I])
+        problem += obj
+
+        # 制約式を入れる
+        """制約4,6,8を緩和させる
+        """
+        for i in I:
+            for j in I:
+                for k in I:
+                    for s in S[1:]:
+                        # e[s][i][j][k]が定義を満たすように制約を入れる
+                        problem += 1-v[s-1][i][j]-v[s][i][k]+e[s][i][j][k] >= 0
+                        problem += v[s-1][i][j]-e[s][i][j][k] >= 0
+                        problem += v[s][i][k]-e[s][i][j][k] >= 0
+        for s in S:
+            for i in I:
+                # 垂直に足して見てね！パワポの制約⑦
+                problem += pulp.lpSum([v[s][j][i] for j in I])<=2
+            
+        for i in I:
+            J = list(set(I)-{i})
+            for s in S:
+                # v[s][i][i]の決め方。パワポで言う制約①
+                problem += v[s][i][i] - pulp.lpSum([v[s][j][i] for j in J]) == 0
+
+        
+        for i in I:
+            J = list(set(I)-{i})
+            # 総試合数に関する制約。パワポで言う制約②
+            problem += pulp.lpSum([v[s][i][j]for j in I for s in S]) == total_game
+            # ホームゲームとビジターゲームの試合数を揃える。パワポで言う制約③
+            problem += (pulp.lpSum([v[s][i][j] for s in S for j in J])
+                      - pulp.lpSum([v[s][i][i] for s in S]) == 0)
+        
+        
+        for s in S:
+            for i in I:
+                # 1日必ず1試合する。パワポで言う制約⑤
+                problem += pulp.lpSum([v[s][i][j]for j in I]) == 1    
+
+        for i in I:
+            for j in I:
+                # 各対戦カードにおけるホームとビジターの試合数をなるべく揃える。パワポで言う制約④
+                if i != j:
+                    problem += pulp.lpSum([v[s][i][j] for s in S])-pulp.lpSum([v[s][j][i] for s in S])+penal1[i][j]+penal1[j][i] <= 1
+                    problem += pulp.lpSum([v[s][i][j] for s in S])-pulp.lpSum([v[s][j][i] for s in S])+penal1[i][j]+penal1[j][i] >= -1
+                    problem += pulp.lpSum([v[s][i][j] for s in S])+penal1[i][j] <= self.ub[game_type]
+                    problem += pulp.lpSum([v[s][i][j] for s in S])+penal1[i][j] >= self.lb[game_type]        
+        for s in S[:-2]:
+            for i in I:
+                for j in I:
+                    # 連戦はしない。パワポで言う制約⑥
+                    if i!=j:
+                        problem += pulp.lpSum([v[t][i][j]+v[t][j][i]for t in range(s,s+3)])+penal3[s][i][j] <= 1
+        for s in S[:-2]:
+            for i in I:
+                # ホームは連続二連ちゃんまで！パワポの制約⑧
+                problem += pulp.lpSum([v[t][i][i]for t in range(s,s+3)])+penal2[s][i] <= 2
+        
+
         if game_type == 'i':
             L = self.Teams['p']
             J = self.Teams['s']

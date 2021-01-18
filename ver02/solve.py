@@ -51,8 +51,34 @@ def Solve(num_process=1,options=[],time_limit=None,solver=0):
     for league in leagues:
         status, obj, e = sol.Solve("r_post",league=league,initialPosition=initial_position['r'],threads=num_process,timeLimit=time_limit,solverName=solver,option=options,initialSolution=True)
         if status==1:
-            preserve(e,'r_post_'+league)     
+            preserve(e,'r_post_'+league) 
+                
+def penSolve(num_process=1,time_limit=None,solver=0):
 
+    sol = ScheduleNPB.Solve()
+    leagues = ['p','s']
+    initial_position = dict()
+
+    for league in leagues:
+        status, obj, e = sol.SolveWithReluxation("r_pre",league=league,threads=num_process,timeLimit=time_limit,solverName=solver)
+        if status==1:
+            preserve(e,'pen_r_pre_'+league)
+
+        e = Load('pen_r_pre_'+league+'.pkl')
+        initial_position[league] = sol.FinalPosition(e, league, 'r_pre')
+
+    position_for_inter = sol.Merge(initial_position['p'],initial_position['s'])
+    status, obj, e = sol.SolveWithReluxation('i', initialPosition = position_for_inter, threads=num_process,timeLimit=time_limit,solverName=solver)
+    if status==1:
+        preserve(e,'pen_i_ps')
+    e = Load('pen_i_ps.pkl')
+    initial_position['r'] = sol.FinalPosition(e, None, 'i')
+
+    for league in leagues:
+        status, obj, e = sol.SolveWithReluxation("r_post",league=league,initialPosition=initial_position['r'],threads=num_process,timeLimit=time_limit,solverName=solver)
+        if status==1:
+            preserve(e,'pen_r_post_'+league)     
+    
 def partSolve(num_process=1,options=[],time_limit=None,solver=0):
     """
     This is a function to compute post inter-league schedules.
@@ -95,7 +121,7 @@ def partSolve(num_process=1,options=[],time_limit=None,solver=0):
     initial_position['r'] = sol.FinalPosition(e, None, 'i')
     for league in leagues:
         if league == 'p':continue
-        status, obj, e = sol.Solve("r_post",league=league,initialPosition=initial_position['r'],threads=num_process,timeLimit=time_limit,solverName=solver,option=options,initialSolution=False)
+        status, obj, e = sol.Solve("r_post",league=league,initialPosition=initial_position['r'],threads=num_process,timeLimit=time_limit,solverName=solver,option=options,initialSolution=True)
         if status==1:
             preserve(e,'r_post_'+league)     
 
@@ -136,6 +162,13 @@ def argparser():
         type=bool
     )
 
+    parser.add_argument(
+        '-pen',
+        help="solve with penalty reluxation, default=false",
+        type=bool,
+        default=False
+    )
+
     return parser
 
 
@@ -146,7 +179,10 @@ if __name__ == "__main__":
     num_process = args.th
     limit = args.t
     solver = args.s
-    if args.part:
+    if args.pen:
+        penSolve(num_process=num_process,time_limit=limit,solver=solver)
+        exit()
+    elif args.part:
         partSolve(num_process=num_process,time_limit=limit,solver=solver)
         exit()
     Solve(num_process=num_process,time_limit=limit,solver=solver)

@@ -3,30 +3,31 @@ import ScheduleNPB
 from utils.utils import Load
 
 from argparse import ArgumentParser
-def main(distance=False, tables=False):
+def main(distance=False, tables=False,pen=''):
     output = ScheduleNPB.Output()
     leagues = ['s','p']
     for league in leagues:
-        filename = 'r_pre_'+league+'.pkl'
+        filename = pen+'r_pre_'+league+'.pkl'
         e = Load(filename)
         output.getSchedule(e, 'r_pre', league=league)
 
-    e = Load('i_ps.pkl')
+    e = Load(pen+'i_ps.pkl')
     output.getSchedule(e, 'i')
 
     for league in leagues:
-        filename= 'r_post_'+league+'.pkl'
+        filename= pen+'r_post_'+league+'.pkl'
         e = Load(filename)
         output.getSchedule(e, 'r_post', league=league)
     output.getWholeSchedule()
     output.MergeRegularSchedule()
+    
     if distance:
         dists = output.TotalDists()
         for team in range(12):
             print(dists[team])
     if tables:
         output.GameTables()
-   
+    output.checkAnswer()
 
 def argparser():
     parser = ArgumentParser()
@@ -46,9 +47,17 @@ def argparser():
         dest='distance',
         type=bool
     )
+    parser.add_argument(
+        '-pen',
+        type=bool,
+        default=False
+    )
     return parser
 
 if __name__ == "__main__":
     parser = argparser()
     args   = parser.parse_args()
-    main(distance=args.distance, tables=args.table)
+    penal = ''
+    if args.pen:
+        penal = 'pen_'
+    main(distance=args.distance, tables=args.table,pen=penal)
