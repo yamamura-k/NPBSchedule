@@ -120,6 +120,26 @@ class GA(NPB):
         #print('step 3 passed')
         return eval
 
+    def totalDist(self, ind):
+        eval = 0
+        game_type = self.game_type
+        total_game = self.total_game[game_type]
+        teamNumber = self.teamNumber
+        teams = []
+        index = 0
+        tableSize = self.tableSize
+        # 遺伝子が各チームの対戦表を表すように分割
+        # [一日目, 二日目, ..., 最終日]みたいな感じで入ってるとする。 
+        while index < len(ind):
+            teams.append(ind[index:index+tableSize])
+            index += tableSize
+        for team in teams:
+            pre = team[0:teamNumber].index(1)
+            for i in range(teamNumber-1, tableSize ,teamNumber):
+                tmp = team[i:i+teamNumber]
+                eval += self.D[pre][tmp.index(1)]
+        return -eval
+
     def evalFunc(self, ind):
         return self.isFeasible0(ind),self.isFeasible1(ind),self.isFeasible2(ind),
         #self.isFeasible3(ind)
@@ -210,9 +230,7 @@ class GA(NPB):
         # 読みやすい出力
         print("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
         #print(len(best_ind))
-        
-        # AtCoder向け出力
-        print(int(best_ind.fitness.values[0]))
+        return best_ind
 class OutputGA(Output):
 
     def __init__(self) -> None:
